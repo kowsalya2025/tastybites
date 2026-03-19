@@ -231,3 +231,70 @@ def create_blog(request):
         return JsonResponse({'success': True, 'redirect_url': '/'})
 
     return JsonResponse({'success': False, 'message': 'Invalid request'})
+
+from django.shortcuts import render
+from .models import Comment
+
+def recipe_page(request):
+    slug = 'recipe-page'  # temporary fixed slug for now
+    comments = Comment.objects.filter(post_slug=slug).order_by('-created_at')
+    return render(request, 'foodapp/recipepage.html', {
+        'comments': comments,
+        'slug': slug
+    })
+
+import json
+from .models import Comment, Reply
+
+# ── ADD COMMENT ──
+@login_required(login_url='account')
+def add_comment(request, slug):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        text = data.get('text', '').strip()
+        if text:
+            Comment.objects.create(
+                post_slug=slug,
+                user=request.user,
+                text=text
+            )
+            return JsonResponse({'success': True})
+    return JsonResponse({'success': False})
+
+
+# ── ADD REPLY ──
+@login_required(login_url='account')
+def add_reply(request, comment_id):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        text = data.get('text', '').strip()
+        if text:
+            comment = Comment.objects.get(id=comment_id)
+            Reply.objects.create(
+                comment=comment,
+                user=request.user,
+                text=text
+            )
+            return JsonResponse({'success': True})
+    return JsonResponse({'success': False})
+
+
+# ── VOTE COMMENT ──
+@login_required(login_url='account')
+def vote_comment(request):
+    if request.method == 'POST':
+        data       = json.loads(request.body)
+        comment_id = data.get('comment_id')
+        vote_type  = data.get('type')
+        comment    = Comment.objects.get(id=comment_id)
+        if vote_type == 'like':
+            comment.likes += 1
+        elif vote_type == 'dislike':
+            comment.dislikes += 1
+        comment.save()
+        return JsonResponse({
+            'success' : True,
+            'likes'   : comment.likes,
+            'dislikes': comment.dislikes
+        })
+    return JsonResponse({'success': False})

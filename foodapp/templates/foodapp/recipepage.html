@@ -1,0 +1,655 @@
+{% extends 'foodapp/base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+
+
+/* Container */
+.container {
+    margin-top: 100px;
+    padding: 20px;
+}
+
+/* Back */
+.back {
+    color: #6c757d;
+    font-size: 16px;
+    cursor: pointer;
+    margin-bottom: 10px;
+}
+
+/* Title */
+.title {
+    text-align: center;
+    font-size: 36px;
+    font-weight: 600;
+    margin: 10px 0;
+}
+
+/* Meta */
+.meta {
+    text-align: center;
+    color: #6c757d;
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+
+.meta span {
+    margin: 0 8px;
+    align-items: center;
+}
+
+/* Image */
+.image-box {
+    width: 80%; 
+    margin: auto;             /* control width */        /* center horizontally */
+    border-radius: 12px;
+    /* overflow: hidden; */
+}
+
+.image-box img {
+    width: 100%;
+    height: 420px;
+    object-fit: cover;
+    display: block;
+}
+
+/* Tags */
+.tags {
+    width: 80%;              /* same width as image */
+    margin: 15px auto;       /* center */
+    color: #6c757d;
+    font-size: 14px;
+    text-align: left;        /* keep tags aligned like screenshot */
+}
+
+.tags span {
+    margin-right: 10px;
+}
+
+/* Main Layout */
+.recipe-wrapper {
+    width: 90%;
+    margin: 40px auto;
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 40px;
+}
+
+/* LEFT CONTENT */
+.recipe-content p {
+    font-size: 16px;
+    line-height: 1.8;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+/* Image inside content */
+.recipe-content img {
+    width: 100%;
+    height: 350px;
+    object-fit: cover;
+    border-radius: 6px;
+    margin: 20px 0;
+}
+
+/* RIGHT SIDEBAR */
+.ingredients-box {
+    border: 2px solid #ff4d4d;
+    border-radius: 12px;
+    padding: 25px;
+    height: fit-content;
+    background: #fff;
+}
+
+/* Ingredients Title */
+.ingredients-box h2 {
+    font-size: 28px;
+    margin-bottom: 20px;
+}
+
+/* Ingredients List */
+.ingredients-box ol {
+    padding-left: 20px;
+}
+
+.ingredients-box li {
+    padding: 5px;
+    margin-bottom: 12px;
+    font-size: 16px;
+}
+
+/* Bottom Heading */
+.sub-title {
+    font-size: 28px;
+    margin-top: 30px;
+}
+
+/* Responsive (important) */
+@media (max-width: 768px) {
+    .recipe-wrapper {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+/* MAIN LAYOUT */
+.section-wrapper {
+    width: 90%;
+    margin: 40px auto;
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 40px;
+}
+
+/* LEFT SIDE */
+.left-content p {
+    font-size: 16px;
+    line-height: 1.8;
+    color: #333;
+    margin: 20px 0;
+}
+
+/* IMAGE GRID */
+.image-grid {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    grid-template-rows: auto auto;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.image-grid img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.grid-wrap {
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr;
+  grid-template-rows: 300px 300px;
+  gap: 15px;
+  width: 100%;
+}
+.grid-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.img1 { grid-column: 1;    grid-row: 1; }
+.img2 { grid-column: 2 / 4; grid-row: 1; }
+.img3 { grid-column: 1;    grid-row: 2; }
+.img4 { grid-column: 2;    grid-row: 2; }
+.img5 { grid-column: 3;    grid-row: 2; }
+
+/* RIGHT SIDE */
+.right-sidebar h3 {
+    font-size: 26px;
+    margin-bottom: 15px;
+}
+
+/* VIDEO */
+.video-box {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 30px;
+}
+
+.video-box img {
+    width: 100%;
+    display: block;
+}
+
+/* Play button */
+.play-btn {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 40px;
+    color: red;
+}
+
+/* COMMENT BOX */
+.comment-box {
+    border: 2px solid #ff4d4d;
+    border-radius: 12px;
+    padding: 35px;
+}
+
+/* Title */
+.comment-box h4 {
+    text-align: center;
+    color: #ff4d4d;
+    font-family: cursive;
+    margin-bottom: 10px;
+}
+
+/* Small text */
+.comment-box p {
+    font-size: 16px;
+    margin-bottom: 15px;
+    line-height: 1.6;
+}
+
+/* Inputs */
+
+.comment-box input,
+.comment-box textarea {
+    width: 100%;
+    padding: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #dcdfe1;
+    margin: 10px 0 25px 0;
+}
+
+/* Button */
+.comment-box button {
+    padding: 10px 20px;
+    border: 1px solid #ff4d4d;
+    background: transparent;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.comment-box button:hover {
+    background: #ff4d4d;
+    color: white;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+    .section-wrapper {
+        grid-template-columns: 1fr;
+    }
+}
+
+.section-title { font-size: 22px; font-weight: 600; margin-bottom: 20px; }
+.comment-block { margin-bottom: 24px; }
+.comment-main { display: flex; gap: 16px; align-items: flex-start; }
+.avatar-initials {
+    width: 64px; height: 64px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; font-weight: 600; flex-shrink: 0;
+    background: #ede7f6; color: #7b2ff7;
+}
+.comment-body { flex: 1; }
+.comment-name { font-size: 16px; font-weight: 600; }
+.comment-date { font-size: 13px; color: #888; margin-top: 2px; }
+.comment-text { font-size: 14px; margin-top: 10px; line-height: 1.6; }
+.comment-actions {
+    display: flex; align-items: center;
+    justify-content: space-between; margin-top: 12px;
+}
+.vote-row { display: flex; align-items: center; gap: 14px; }
+.vote-btn {
+    display: flex; align-items: center; gap: 5px;
+    background: none; border: none; cursor: pointer;
+    font-size: 14px; color: #888;
+}
+.vote-btn:hover, .vote-btn.active { color: #ff4d4d; }
+.reply-btn {
+    border: 1.5px solid #ff4d4d; background: #fff;
+    color: #1a1a1a; padding: 8px 24px;
+    border-radius: 8px; font-size: 14px; cursor: pointer;
+}
+.reply-area { margin-top: 12px; margin-left: 80px; }
+.reply-card { background: #fde8e8; border-radius: 12px; padding: 16px 20px; margin-top: 8px; }
+.reply-header { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; }
+.author-badge {
+    background: #ff4d4d; color: #fff; font-size: 12px;
+    padding: 3px 12px; border-radius: 20px;
+}
+.reply-meta { font-size: 13px; color: #888; }
+.reply-meta span { color: #ff4d4d; font-weight: 500; }
+.add-comment-box { margin-top: 28px; border-top: 1px solid #eee; padding-top: 20px; }
+.add-comment-box textarea {
+    width: 100%; border: 1.5px solid #ddd; border-radius: 10px;
+    padding: 12px 16px; font-size: 14px; resize: none; height: 80px; outline: none;
+}
+.add-comment-box textarea:focus { border-color: #ff4d4d; }
+.submit-btn {
+    background: #ff4d4d; color: #fff; border: none;
+    padding: 10px 28px; border-radius: 8px; font-size: 14px;
+    cursor: pointer; margin-top: 10px; float: right;
+}
+</style>
+
+<div class="container">
+
+    <!-- Back -->
+    <div class="back">
+        ← Back
+    </div>
+
+    <!-- Title -->
+    <h1 class="title">Creamy Spinach & Mushroom Pasta</h1>
+
+    <!-- Meta Info -->
+    <div class="meta">
+        <span>● Vegetarian</span>
+        <span>● By Charles</span>
+        <span>● Feb 24, 2026</span>
+        <span>● 15 min (For prepare)</span>
+    </div>
+
+    <!-- Image -->
+    <div class="image-box">
+        <img src="{% static 'images/passta1.avif' %}" alt="Pasta">
+    </div>
+
+    <!-- Tags -->
+    <div class="tags">
+        <span>#pasta</span>
+        <span>#vegetarian</span>
+        <span>#quickdinner</span>
+        <span>#comfortfood</span>
+        <span>#italiancuisine</span>
+    </div>
+
+</div>
+
+<div class="recipe-wrapper">
+
+    <!-- LEFT SIDE -->
+    <div class="recipe-content">
+
+        <p>
+            Creamy Spinach & Mushroom Pasta is the perfect combination of comfort and elegance on a plate. 
+            This dish brings together tender pasta coated in a rich, velvety cream sauce, balanced beautifully 
+            with the earthy flavor of sautéed mushrooms and the freshness of vibrant green spinach. 
+            Every bite is smooth, flavorful, and deeply satisfying — making it an ideal choice for cozy dinners, 
+            quick weekday meals, or even a simple yet impressive dish for guests.
+        </p>
+
+        <img src="{% static 'images/passta2.png' %}" alt="Cooking Pasta">
+
+        <p>
+            The magic of this recipe begins with perfectly cooked pasta, boiled until al dente so it holds its shape 
+            while absorbing the creamy sauce. In a separate pan, onions and garlic are gently sautéed in butter and olive oil, 
+            releasing a warm, inviting aroma that fills the kitchen. Fresh mushrooms are then added and cooked until golden.
+        </p>
+
+        <h2 class="sub-title">Why You’ll Love This Recipe</h2>
+
+        <p>The magic of this recipe begins with perfectly cooked pasta, boiled until al dente so it holds its shape while
+absorbing the creamy sauce. In a separate pan, onions and garlic are gently sautéed in butter and olive oil,
+releasing a warm, inviting aroma that fills the kitchen. Fresh mushrooms are then added and cooked until golden
+brown, bringing a rich, savory depth to the dish. As the mushrooms soften and caramelize slightly, they create a
+beautiful base for the sauce.</p>
+
+<p>
+    Fresh spinach is folded in next, wilting gently into the mixture and adding both color and nutritional value. The
+vibrant green leaves contrast wonderfully with the creamy white sauce, making the dish as visually appealing as
+it is delicious. The sauce itself is prepared using fresh cream and a touch of milk, simmered slowly until it
+thickens into a silky texture. Grated parmesan cheese melts into the sauce, enhancing the flavor with a subtle
+saltiness and nutty richness.
+</p>
+
+    </div>
+
+    <!-- RIGHT SIDE -->
+    <div class="ingredients-box">
+
+        <h2>Ingredients</h2>
+
+        <ol>
+            <li>250g pasta (penne or fettuccine)</li>
+            <li>2 cups fresh spinach (washed)</li>
+            <li>1 cup mushrooms (sliced)</li>
+            <li>3 cloves garlic (minced)</li>
+            <li>1 small onion (finely chopped)</li>
+            <li>1 cup fresh cream</li>
+            <li>½ cup grated parmesan cheese</li>
+            <li>1 tbsp olive oil</li>
+            <li>1 tbsp butter</li>
+            <li>Salt to taste</li>
+            <li>Black pepper to taste</li>
+            <li>Chili flakes (optional)</li>
+            <li>Fresh parsley for garnish</li>
+        </ol>
+
+        <h2>Why You'll Love This Recipe</h2>
+        <ol>
+            <li> 1. Simple ingredients</li>
+            <li> 2. Creamy and flavorful</li>
+            <li> 3. Perfect for family dinners</li>
+            <li> 4. Vegetarian-friendly</li>
+            <li> 5. Ready in under 40 minutes</li>
+        
+        </ol>
+
+    </div>
+
+</div>
+
+<div class="section-wrapper">
+
+    <!-- LEFT SIDE -->
+    <div class="left-content">
+
+        <!-- IMAGE GRID -->
+        <div class="grid-wrap">
+  <div class="img1"><img src="{% static 'images/passta3.png' %}" alt="garlic"></div>
+  <div class="img2"><img src="{% static 'images/passta4.png' %}" alt="mushrooms"></div>
+  <div class="img3"><img src="{% static 'images/passta5.png' %}" alt="spinach"></div>
+  <div class="img4"><img src="{% static 'images/passta6.png' %}" alt="cream sauce"></div>
+  <div class="img5"><img src="{% static 'images/passta7.png' %}" alt="pasta"></div>
+</div>
+
+        <!-- TEXT -->
+        <p>
+            When the cooked pasta is tossed into this creamy mixture, it becomes fully coated, 
+            allowing the flavors to blend perfectly. A splash of reserved pasta water can be 
+            added to achieve a smooth and glossy consistency. The final touch is a sprinkle 
+            of freshly ground black pepper, chili flakes for gentle heat, and chopped parsley for freshness.
+        </p>
+
+        <p>
+            What makes Creamy Spinach & Mushroom Pasta truly special is its versatility. 
+            It can be enjoyed as a wholesome vegetarian meal, or easily customized with grilled chicken, 
+            prawns, or roasted vegetables. It pairs beautifully with garlic bread, toasted baguette slices, 
+            or a light green salad on the side.
+        </p>
+
+        <p>
+            This dish is not only delicious but also nourishing, offering a comforting balance of carbohydrates, 
+            healthy fats, and plant-based nutrients from spinach and mushrooms. Whether served on a quiet evening 
+            at home or as part of a dinner gathering, it delivers warmth, flavor, and satisfaction.
+        </p>
+
+    </div>
+
+    <!-- RIGHT SIDE -->
+    <div class="right-sidebar">
+
+        <!-- VIDEO -->
+        <h3>Watch Video</h3>
+
+        <div class="video-box">
+            <img src="{% static 'images/passta1.avif' %}">
+            <div class="play-btn">▶</div>
+        </div>
+
+        <!-- COMMENT FORM -->
+        <div class="comment-box">
+
+            <h4>Leave a Reply</h4>
+
+            <p>Your email address will not be published. Required fields are marked *</p>
+
+            <label>Comment*</label>
+            <textarea rows="5" placeholder="Write comment..."></textarea>
+
+            <label>Name*</label>
+            <input type="text" placeholder="Name">
+
+            <label>Email*</label>
+            <input type="email" placeholder="Enter Email Address">
+
+            <button>Post a Comment</button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- COMMENT SECTION -->
+<div style="max-width:780px; padding: 20px 0;">
+    <div class="section-title">Comment</div>
+
+    {% for comment in comments %}
+    <div class="comment-block">
+        <div class="comment-main">
+            <div class="avatar-initials">{{ comment.user.username|first|upper }}</div>
+            <div class="comment-body">
+                <div class="comment-name">{{ comment.user.username }}</div>
+                <div class="comment-date">Posted: {{ comment.created_at|timesince }} ago</div>
+                <div class="comment-text">"{{ comment.text }}"</div>
+                <div class="comment-actions">
+                    <div class="vote-row">
+                        <button class="vote-btn" onclick="vote({{ comment.id }}, 'like')">
+                            👍 <span id="likes-{{ comment.id }}">{{ comment.likes }}</span>
+                        </button>
+                        <button class="vote-btn" onclick="vote({{ comment.id }}, 'dislike')">
+                            👎 <span id="dislikes-{{ comment.id }}">{{ comment.dislikes }}</span>
+                        </button>
+                    </div>
+                    <button class="reply-btn" onclick="toggleReply({{ comment.id }})">Reply</button>
+                </div>
+
+                <!-- Reply input -->
+                <div id="replyForm{{ comment.id }}" style="display:none; margin-top:10px;">
+                    <textarea id="replyText{{ comment.id }}"
+                              style="width:100%;border:1.5px solid #ddd;border-radius:8px;padding:10px;font-size:14px;resize:none;height:60px;outline:none;"
+                              placeholder="Reply to {{ comment.user.username }}..."></textarea>
+                    <button class="submit-btn" onclick="submitReply({{ comment.id }})">Post Reply</button>
+                    <div style="clear:both;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Replies -->
+        <div class="reply-area">
+            {% for reply in comment.replies.all %}
+            <div class="reply-card">
+                <div class="reply-header">
+                    <div class="avatar-initials" style="width:48px;height:48px;font-size:16px;">
+                        {{ reply.user.username|first|upper }}
+                    </div>
+                    <div>
+                        <div style="display:flex;align-items:center;gap:8px;">
+                            <span style="font-weight:600;">{{ reply.user.username }}</span>
+                            {% if reply.user == request.user %}
+                            <span class="author-badge">Author</span>
+                            {% endif %}
+                        </div>
+                        <div class="reply-meta">
+                            Reply to <span>{{ comment.user.username }}</span>
+                            &nbsp; Posted: {{ reply.created_at|timesince }} ago
+                        </div>
+                    </div>
+                </div>
+                <div style="font-size:14px;line-height:1.6;">"{{ reply.text }}"</div>
+                <div style="display:flex;justify-content:flex-end;margin-top:10px;">
+                    <button class="reply-btn" onclick="toggleReply({{ comment.id }})">Reply</button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endfor %}
+
+    <!-- Add new comment -->
+    <div class="add-comment-box">
+        <textarea id="newCommentText" placeholder="Write a comment..."></textarea>
+        <button class="submit-btn" onclick="submitComment()">Post Comment</button>
+        <div style="clear:both;"></div>
+    </div>
+</div>
+
+<script>
+function toggleReply(id) {
+    const form = document.getElementById('replyForm' + id);
+    form.style.display = form.style.display === 'none' ? 'block' : 'none';
+    if (form.style.display === 'block') {
+        document.getElementById('replyText' + id).focus();
+    }
+}
+
+function submitComment() {
+    const text = document.getElementById('newCommentText').value.trim();
+    if (!text) return;
+
+    fetch("{% url 'add_comment' slug %}", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify({ text: text })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Failed to post comment. Please log in.');
+        }
+    })
+    .catch(() => alert('Network error. Please try again.'));
+}
+
+function submitReply(commentId) {
+    const text = document.getElementById('replyText' + commentId).value.trim();
+    if (!text) return;
+
+    fetch('/add-reply/' + commentId + '/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify({ text: text })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Failed to post reply. Please log in.');
+        }
+    })
+    .catch(() => alert('Network error. Please try again.'));
+}
+
+function vote(commentId, type) {
+    fetch("{% url 'vote_comment' %}", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify({ comment_id: commentId, type: type })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            document.getElementById('likes-' + commentId).textContent = data.likes;
+            document.getElementById('dislikes-' + commentId).textContent = data.dislikes;
+        }
+    })
+    .catch(() => alert('Network error. Please try again.'));
+}
+</script>
+
+{% endblock %}
+

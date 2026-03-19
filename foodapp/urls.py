@@ -13,4 +13,8 @@ urlpatterns = [
     path('post/<slug:slug>/', views.post_detail, name='post_detail'),
     path('write/', views.write, name='write_blog'),
     path('create-blog/', views.create_blog, name='create_blog'),
+    path('recipe/', views.recipe_page, name='recipepage'),
+     path('add-comment/<slug:slug>/',      views.add_comment,  name='add_comment'),
+    path('add-reply/<int:comment_id>/',   views.add_reply,    name='add_reply'),
+    path('vote-comment/',                 views.vote_comment, name='vote_comment'),
 ]

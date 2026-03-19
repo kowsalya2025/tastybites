@@ -192,7 +192,7 @@ line-height: 1.6;
  
     .blog-card-author { font-size: .85rem; color: #555; margin-top: 2px; }
  
-    .btn-read-now {
+    .btn-read-now{
       display: inline-block;
       margin-top: 6px;
       align-self: flex-start;
@@ -205,6 +205,13 @@ line-height: 1.6;
       cursor: pointer;
       transition: background .2s, color .2s;
     }
+
+    .blog-card a{
+      background-color: #e74c3c;
+      color: white;
+      text-decoration: none;
+    }
+    
     .btn-read-now:hover { background: #e74c3c; color: #fff; }
  
     /* Card nav */
@@ -421,6 +428,7 @@ line-height: 1.6;
 
 
 
+
 </style>
 <section class="hero">
 
@@ -482,7 +490,7 @@ line-height: 1.6;
             Read 5 min
           </div>
           <div class="blog-card-author">By, Charles</div>
-          <button class="btn-read-now">Read Now</button>
+          <a href="{% url 'recipepage' %}" class="btn-read-now">Read Now</a>
         </div>
       </div>
  
