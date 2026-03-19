@@ -59,11 +59,14 @@ line-height: 1.6;
 }
 
 .hero-buttons{
-margin-top:20px;
 font-size: 28px;
 }
-.hero-buttons button{
-    font-size: 20px;
+.hero-buttons a {
+    display: inline-block;
+    text-decoration: none;
+    font-size: 30px;
+    padding: 12px 25px;
+    border-radius: 25px;
 }
 
 
@@ -74,6 +77,7 @@ padding:12px 25px;
 color:white;
 border-radius:25px;
 margin-right:10px;
+font-size: 20px;
 }
 
 .write{
@@ -81,6 +85,7 @@ border:2px solid #ff5a5a;
 background:transparent;
 padding:12px 25px;
 border-radius:25px;
+font-size: 20px;
 }
 
 /* DOTS */
@@ -594,8 +599,12 @@ color:red;
 <p>Simple ingredients. Amazing flavors. Cook with <br>confidence and joy.<p>
 
 <div class="hero-buttons">
-<button class="explore">Explore Blog</button>
-<button class="write">Write a Blog</button>
+    <a href="{% url 'blogs' %}">
+        <button class="explore">Explore Blog</button>
+    </a>
+    <a href="{% url 'write' %}">
+        <button class="write">Write a Blog</button>
+    </a>
 </div>
 
 </div>

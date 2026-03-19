@@ -201,7 +201,7 @@ def profile(request):
 
 
 # ── WRITE BLOG ──
-@login_required
+@login_required(login_url='account')
 def write(request):
     return render(request, 'foodapp/write_blog.html')
 
