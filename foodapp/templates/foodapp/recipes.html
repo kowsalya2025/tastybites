@@ -1,0 +1,727 @@
+{% extends 'foodapp/base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+        
+.hero{
+position:relative;
+height:320px;
+overflow:hidden;
+}
+
+
+.slide{
+position:absolute;
+width:100%;
+height:100%;
+opacity:0;
+transition:0.8s;
+}
+
+.slide img{
+width:100%;
+height:100%;
+object-fit:cover;
+}
+
+
+
+/* HERO TEXT */
+
+.hero-content{
+position:absolute;
+top:60%;
+left:50%;
+transform:translate(-50%,-50%);
+text-align:center;
+color:black;
+}
+
+.hero-content h1{
+font-size:30px;
+margin-bottom:10px;
+}
+
+.hero-content p{
+font-size:16px;
+padding: 10px;
+line-height: 1.6;
+}
+
+
+/* recipe section */
+/* trending */
+.trending{
+width:1200px;
+margin:auto;
+padding:40px 0;
+}
+
+.trending-header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:30px;
+}
+
+.recipe-container{
+display:flex;
+flex-wrap: wrap;
+gap:25px;
+}
+
+.recipe-card{
+background:white;
+border-radius:15px;
+overflow:hidden;
+box-shadow:0 5px 15px rgba(0,0,0,0.1);
+transition:0.3s;
+width:33%;
+ width: calc(33.33% - 17px); /* 3 per row */
+}
+
+.recipe-card:hover{
+transform:translateY(-6px);
+}
+
+/* IMAGE */
+
+.image-box{
+position:relative;
+height:220px;
+overflow:hidden;   /* important to hide extra image */
+}
+
+.image-box img{
+width:100%;
+height:100%;
+object-fit:cover;
+transition:transform 0.6s ease;
+}
+
+/* ZOOM IN EFFECT */
+
+.recipe-card:hover img{
+transform:scale(1.15);
+}
+
+/* TAG */
+
+.tag{
+position:absolute;
+top:15px;
+left:15px;
+background:#ff4d4d;
+color:white;
+padding:5px 12px;
+border-radius:20px;
+font-size:13px;
+}
+
+.rating{
+position:absolute;
+top:15px;
+right:15px;
+background:white;
+padding:5px 10px;
+border-radius:20px;
+font-size:13px;
+}
+
+/* CONTENT */
+
+.card-content{
+padding:20px;
+}
+
+.meta{
+display:flex;
+gap:20px;
+font-size:14px;
+color:gray;
+margin-bottom:10px;
+}
+
+.dish-title{
+font-size:18px;
+transition:0.3s;
+}
+
+/* TITLE RED ON HOVER */
+
+.recipe-card:hover .dish-title{
+color:#ff4d4d;
+}
+
+.card-content p{
+font-size:14px;
+color:#666;
+margin-top:10px;
+margin-bottom:15px;
+padding-bottom: 15px;
+border-bottom: 1px solid #eee;
+}
+
+/* AUTHOR */
+
+.author{
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+.chef{
+display:flex;
+align-items:center;
+gap:10px;
+}
+
+.chef img{
+width:35px;
+height:35px;
+border-radius:50%;
+}
+
+/* HEART */
+
+.heart{
+font-size:28px;
+cursor:pointer;
+transition:0.3s;
+}
+
+/* when clicked */
+.heart.liked{
+color:red;
+}
+
+/* big banner */
+.ingredients {
+    width: 100%;
+    height: 600px;
+    background: url("{% static 'images/bigbanner.png' %}") no-repeat center/cover;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 0 80px;
+    position: relative;
+}
+
+/* LIGHT OVERLAY (right side fade effect) */
+.ingredients::before {
+    content: "";
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 45%;
+    height: 100%;
+    /* background: rgba(255, 255, 255, 0.85); */
+}
+
+/* CONTENT */
+.ingredients-content {
+    position: relative;
+    width: 400px;
+    z-index: 2;
+}
+
+.ingredients-content h5 {
+    font-size: 16px;
+    margin-bottom: 10px;
+    color: #444;
+}
+
+.ingredients-content h1 {
+    font-size: 36px;
+    line-height: 1.3;
+    margin-bottom: 15px;
+}
+
+.ingredients-content h1 span {
+    font-weight: bold;
+}
+
+.ingredients-content p {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 25px;
+}
+
+/* BUTTON */
+.btn {
+    display: inline-block;
+    background: #ff4d4d;
+    color: white;
+    padding: 12px 28px;
+    border-radius: 25px;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.btn:hover {
+    background: #e63c3c;
+}
+
+/* recipe grid */
+  .recipes-section {
+    max-width: 90%;
+    margin: 36px auto;
+    padding: 0 8px;
+  }
+ 
+  .recipes-section h2 {
+    font-family: 'Merriweather', serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #111;
+    margin-bottom: 24px;
+  }
+ 
+  /* 4-column grid */
+  .recipes-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+  }
+ 
+  /* Each card */
+  .rgrid-card {
+    border-radius: 14px;
+    overflow: hidden;
+    background: #fff;
+    box-shadow: 0 1px 6px rgba(0,0,0,.08);
+    cursor: pointer;
+    transition: box-shadow .2s, transform .2s;
+    display: flex;
+    flex-direction: column;
+  }
+  .rgrid-card:hover {
+    box-shadow: 0 6px 24px rgba(0,0,0,.14);
+    transform: translateY(-3px);
+  }
+ 
+  /* Image wrapper — fixed height */
+  .rgrid-card__img-wrap {
+    width: 100%;
+    height: 280px;
+    overflow: hidden;
+    position: relative;
+    flex-shrink: 0;
+  }
+ 
+  .rgrid-card__img-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform .35s ease;
+  }
+  .rgrid-card:hover .recipe-card__img-wrap img {
+    transform: scale(1.04);
+  }
+ 
+  /* Gradient overlay at bottom of image */
+  .rgrid-card__img-wrap::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 80px;
+    pointer-events: none;
+  }
+ 
+  /* Title area below image */
+  .rgrid-card__body {
+    padding: 14px 16px 18px;
+    /* background: #fff; */
+  }
+ 
+  .rgrid-card__title {
+    font-family: 'Lato', sans-serif;
+    font-size: .95rem;
+    font-weight: 600;
+    color: #222;
+    line-height: 1.45;
+    transition: color .2s;
+    text-align: left;
+  }
+  .rgrid-card:hover .recipe-card__title {
+    color: #e74c3c;
+  }
+ 
+  /* Responsive */
+  @media (max-width: 1024px) {
+    .recipes-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (max-width: 700px) {
+    .recipes-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 440px) {
+    .recipes-grid { grid-template-columns: 1fr; }
+  }
+
+</style>
+
+<section class="hero">
+
+<div class="carousel">
+
+<div class="slide active">
+<img src="{% static 'images/banner3.png' %}">
+</div>
+</div>
+
+<div class="hero-content">
+
+<h1>Explore Tasty Recipes</h1>
+
+<p>from quick meals to gourmet delights, find the perfect recipe for every occasion<p>
+</div>
+</section>
+
+<!-- recipe -->
+ <!-- trending -->
+ <section class="trending">
+
+<div class="trending-header">
+    <div>
+        <h2>Most Popular Recipe Collections</h2>
+       
+    </div>
+
+    <a href="{% url 'recipes' %}">View all →</a>
+</div>
+
+
+<div class="recipe-container">
+
+<!-- CARD 1 -->
+
+<div class="recipe-card">
+
+    <div class="image-box">
+        <img src="{% static 'images/recipe1.jpg' %}" alt="recipe">
+
+        <span class="tag">Recipe</span>
+        <span class="rating">⭐ 4.5</span>
+    </div>
+
+
+    <div class="card-content">
+
+        <div class="meta">
+            <span>⏱ 15 min</span>
+            <span>Easy</span>
+        </div>
+
+        <h3 class="dish-title">Avocado Toast with Poached Egg</h3>
+
+        <p>
+        The perfect brunch staple. Crispy sourdough, creamy avocado mash,
+        and a perfectly runny poached egg.
+        </p>
+
+        <div class="author">
+
+            <div class="chef">
+                <img src="{% static 'images/reci1.jpg' %}">
+                <span>Sara Jenkins</span>
+            </div>
+
+            <span class="heart">♡</span>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- CARD 2 -->
+
+<div class="recipe-card">
+
+    <div class="image-box">
+        <img src="{% static 'images/recipe2.jpg' %}" alt="recipe">
+
+        <span class="tag">Recipe</span>
+        <span class="rating">⭐ 4.5</span>
+    </div>
+
+    <div class="card-content">
+
+        <div class="meta">
+            <span>⏱ 30 min</span>
+            <span>Medium</span>
+        </div>
+
+        <h3 class="dish-title">Grilled Salmon with Asparagus</h3>
+
+        <p>
+        Healthy and flavorful grilled salmon served with crisp lemon-garlic asparagus.
+        </p>
+
+        <div class="author">
+
+            <div class="chef">
+                <img src="{% static 'images/reci2.jpg' %}">
+                <span>Chef Khan</span>
+            </div>
+
+            <span class="heart">♡</span>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- CARD 3 -->
+
+<div class="recipe-card">
+
+    <div class="image-box">
+        <img src="{% static 'images/recipe3.jpg' %}" alt="recipe">
+
+        <span class="tag">Recipe</span>
+        <span class="rating">⭐ 4.5</span>
+    </div>
+
+    <div class="card-content">
+
+        <div class="meta">
+            <span>⏱ 40 min</span>
+            <span>Hard</span>
+        </div>
+
+        <h3 class="dish-title">Decadent Chocolate Lava Cake</h3>
+
+        <p>
+        A rich chocolate cake with a molten center that flows out when you cut into it.
+        </p>
+
+        <div class="author">
+
+            <div class="chef">
+                <img src="{% static 'images/reci3.webp' %}">
+                <span>Isabella</span>
+            </div>
+
+            <span class="heart">♡</span>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- CARD 4 -->
+
+<div class="recipe-card">
+
+    <div class="image-box">
+        <img src="{% static 'images/recipe4.jpg' %}" alt="recipe">
+
+        <span class="tag">Recipe</span>
+        <span class="rating">⭐ 4.5</span>
+    </div>
+
+    <div class="card-content">
+
+        <div class="meta">
+            <span>⏱ 14 min</span>
+            <span>Easy</span>
+        </div>
+
+        <h3 class="dish-title">Fresh Mediterranean Salad</h3>
+
+        <p>
+        Crisp vedetables, olives, and feta tossed in a light lemon dressing.
+        </p>
+
+        <div class="author">
+
+            <div class="chef">
+                <img src="{% static 'images/reci2.jpg' %}">
+                <span>Chef Khan</span>
+            </div>
+
+            <span class="heart">♡</span>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- CARD 5 -->
+
+<div class="recipe-card">
+
+    <div class="image-box">
+        <img src="{% static 'images/recipe5.jpg' %}" alt="recipe">
+
+        <span class="tag">Recipe</span>
+        <span class="rating">⭐ 4.5</span>
+    </div>
+
+    <div class="card-content">
+
+        <div class="meta">
+            <span>⏱ 34 min</span>
+            <span>Medium</span>
+        </div>
+
+        <h3 class="dish-title">Cheesy Margherita Pizza</h3>
+
+        <p>
+        A classic italian pizza topped with fresh mozzarella, basil leaves, and rich tomato sauce on a crispy crust.
+        </p>
+
+        <div class="author">
+
+            <div class="chef">
+                <img src="{% static 'images/reci2.jpg' %}">
+                <span>Chef Khan</span>
+            </div>
+
+            <span class="heart">♡</span>
+
+        </div>
+
+    </div>
+
+</div>
+
+</div>
+</section>
+
+<section class="ingredients">
+
+    <div class="ingredients-content">
+        <h5>Get Started</h5>
+
+        <h1>
+            <span>10 Ingredients.</span><br>
+            hundreds of Recipes
+        </h1>
+
+        <p>
+            All you need is 10 staple ingredients to make hundreds of authentic
+            Chinese dishes. Start your Chinese cooking journey!
+        </p>
+
+        <a href="#" class="btn">Browse Guide</a>
+    </div>
+
+</section>
+
+
+
+<!-- recipe grid -->
+ <div class="recipes-section">
+  <h2>All Recipes</h2>
+ 
+  <div class="recipes-grid">
+ 
+    {% for recipe in recipes %}
+     <div class="rgrid-card">
+      <div class="rgrid-card__img-wrap">
+        <img src="{{ recipe.image.url }}" alt="{{ recipe.title }}">
+      </div>
+      <div class="rgrid-card__body">
+        <div class="rgrid-card__title">{{ recipe.title }}</div>
+      </div>
+    </div>
+    {% empty %}
+ 
+    <!-- Demo cards — replace with real data -->
+    <div class="rgrid-card">
+      <div class="rgrid-card__img-wrap">
+        <img src="{% static 'images/write1.webp' %}" alt="Sheet Pan Peruvian Chicken Thighs">
+      </div>
+      <div class="rgrid-card__body">
+        <div class="rgrid-card__title">Sheet Pan Peruvian Chicken Thighs</div>
+      </div>
+    </div>
+ 
+    <div class="rgrid-card">
+      <div class="rgrid-card__img-wrap">
+        <img src="{% static 'images/write2.webp' %}" alt="Beef with Mushrooms and Bamboo Shoots">
+      </div>
+      <div class="rgrid-card__body">
+        <div class="rgrid-card__title">Beef with Mushrooms and Bamboo Shoots</div>
+      </div>
+    </div>
+ 
+    <div class="rgrid-card">
+      <div class="rgrid-card__img-wrap">
+        <img src="{% static 'images/write3.webp' %}" alt="Spring Roll Dipping Sauce">
+      </div>
+      <div class="rgrid-card__body">
+        <div class="rgrid-card__title">Spring Roll Dipping Sauce</div>
+      </div>
+    </div>
+ 
+    <div class="rgrid-card">
+      <div class="rgrid-card__img-wrap">
+        <img src="{% static 'images/write4.webp' %}" alt="Chow Har Kew">
+      </div>
+      <div class="rgrid-card__body">
+        <div class="rgrid-card__title">Chow Har Kew (Stir-fried Crispy Shrimp with Vegetables)</div>
+      </div>
+    </div>
+ 
+    <div class="rgrid-card">
+      <div class="rgrid-card__img-wrap">
+        <img src="{% static 'images/write5.webp' %}" alt="Beef with Broccoli">
+      </div>
+      <div class="rgrid-card__body">
+        <div class="rgrid-card__title">Cauliflower Stir-Fry with Beef</div>
+      </div>
+    </div>
+ 
+    <div class="rgrid-card">
+      <div class="rgrid-card__img-wrap">
+        <img src="{% static 'images/write6.webp' %}" alt="Braised Pork Belly">
+      </div>
+      <div class="rgrid-card__body">
+        <div class="rgrid-card__title">Braised Pork Belly with Tofu Puffs</div>
+      </div>
+    </div>
+ 
+    <div class="rgrid-card">
+      <div class="rgrid-card__img-wrap">
+        <img src="{% static 'images/write7.webp' %}" alt="Mapo Tofu">
+      </div>
+      <div class="rgrid-card__body">
+        <div class="rgrid-card__title">Century Eggs with Green Peppers</div>
+      </div>
+    </div>
+ 
+    <div class="rgrid-card">
+      <div class="rgrid-card__img-wrap">
+        <img src="{% static 'images/write8.webp' %}" alt="Fried Rice">
+      </div>
+      <div class="rgrid-card__body">
+        <div class="rgrid-card__title">Egg Roll Wrappers</div>
+      </div>
+    </div>
+    {% endfor %}
+ 
+  </div><!-- /.recipes-grid -->
+</div><!-- /.recipes-section -->
+ 
+<script>
+  // Heart toggle
+  document.querySelectorAll('.heart').forEach(h => {
+    h.addEventListener('click', () => h.classList.toggle('liked'));
+  });
+</script>
+
+{% endblock %}

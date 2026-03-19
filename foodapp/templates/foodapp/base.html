@@ -1,0 +1,450 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>TastyBites</title>
+
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Satisfy&display=swap" rel="stylesheet">
+</head>
+<style>
+    *{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial;
+}
+
+/* NAVBAR */
+
+.navbar{
+position:absolute;
+top:0;
+left:0;
+width:100%;
+display:flex;
+align-items:center;
+justify-content:space-between;
+padding:10px 40px;
+background:rgba(255,255,255,0.8);
+box-shadow: 5px 5px 5px gray;
+/* backdrop-filter:blur(6px); */
+z-index:10;
+}
+.logo img{
+width: 120px;
+
+}
+
+.search-box{
+position:relative;
+}
+
+.search{
+padding:10px 15px 10px 40px;
+width:280px;
+border-radius:25px;
+border:1px solid #ddd;
+box-shadow: 5px 5px 5px gray;
+outline:none;
+}
+
+.search-box i{
+position:absolute;
+left:15px;
+top:50%;
+transform:translateY(-50%);
+color:#888;
+}
+
+.menu{
+display:flex;
+align-items:center;
+gap:30px;
+list-style:none;
+margin:0;
+padding:0;
+}
+
+.menu li{
+display:inline-block;
+}
+
+.menu li a{
+text-decoration:none;
+color:#000;
+font-size:18px;
+font-weight:500;
+transition:all 0.3s ease;
+display:inline-block;
+}
+
+/* hover animation */
+
+.menu li a:hover{
+color:#ff5a5a;
+transform:translateY(-6px);
+}
+
+.account{
+    font-size: 20px;
+display:flex;
+align-items:center;
+gap:40px;
+display:inline-block;
+}
+
+.account a{
+    color: #000;
+    text-decoration: none;
+   transition:all 0.3s ease;
+display:inline-block; 
+}
+
+.account1:hover{
+    color:#ff5a5a;
+transform:translateY(-8px);
+}
+
+.subscribe{
+background:#ff5a5a;
+font-size: 20px;
+border:none;
+padding:10px 18px;
+color:white;
+border-radius:20px;
+cursor:pointer;
+}
+
+/* footer */
+/* NEWSLETTER */
+
+.newsletter{
+background:#ff4d4d;
+padding:60px 20px;
+text-align:center;
+color:white;
+border-radius:20px;
+width:85%;
+margin:60px auto;
+}
+
+.newsletter h2{
+font-size:34px;
+margin-bottom:10px;
+}
+
+.newsletter p{
+max-width:740px;
+margin:auto;
+margin-bottom:25px;
+}
+
+.newsletter-form{
+display:flex;
+justify-content:center;
+gap:20px;
+}
+
+.newsletter-form input{
+width:320px;
+padding:14px;
+border:none;
+border-radius:30px;
+outline:none;
+}
+
+.newsletter-form button{
+background:white;
+color:#ff4d4d;
+border:none;
+padding:14px 30px;
+border-radius:30px;
+cursor:pointer;
+font-weight:bold;
+}
+.newsletter .last{
+display:block;
+margin-top:20px;
+font-size:16px;
+opacity:0.9;
+}
+
+
+/* FOOTER */
+
+.footer{
+background:#ff4d4d;
+color:white;
+padding:60px 40px 20px;
+}
+
+.footer-container{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:40px;
+}
+
+.footer-logo{
+width:220px;
+margin-bottom:15px;
+}
+
+.footer-col h3{
+margin-bottom:15px;
+}
+
+.footer-col a{
+display:block;
+color:white;
+text-decoration:none;
+margin-bottom:8px;
+}
+
+.footer-subscribe{
+display:flex;
+gap:10px;
+margin-top:10px;
+}
+
+.footer-subscribe input{
+padding:10px;
+border:none;
+border-radius:20px;
+width:160px;
+}
+
+.footer-subscribe button{
+padding:10px 18px;
+border:none;
+background:white;
+color:#ff4d4d;
+border-radius:20px;
+cursor:pointer;
+}
+
+.footer-bottom{
+display:grid;
+grid-template-columns:1fr auto 1fr;
+align-items:center;
+padding:20px 40px;
+}
+
+.copyright{
+text-align:center;
+font-size:14px;
+}
+
+.follow-us{
+justify-self:end;
+display:flex;
+align-items:center;
+gap:12px;
+}
+
+.follow-us span{
+color:white;
+font-size:14px;
+}
+
+.follow-us a{
+color:white;
+font-size:18px;
+transition:0.3s;
+}
+
+.follow-us a:hover{
+color:#ff6b6b;
+}
+
+/* HERO */
+
+.hero{
+position:relative;
+height:520px;
+overflow:hidden;
+}
+
+.carousel{
+position:absolute;
+width:100%;
+height:100%;
+}
+
+.slide{
+position:absolute;
+width:100%;
+height:100%;
+opacity:0;
+transition:0.8s;
+}
+
+.slide img{
+width:100%;
+height:100%;
+object-fit:cover;
+}
+
+.slide.active{
+opacity:1;
+}
+</style>
+<body>
+    <nav class="navbar">
+
+<div class="logo">
+    <img src="{% static 'images/logofood.png' %}">
+</div>
+
+<form method="GET" action="{% url 'search' %}" class="search-box">
+    <i class="bi bi-search"></i>
+    <input type="text" name="q" placeholder="Search here..." class="search">
+</form>
+
+<ul class="menu">
+
+<li><a href="{% url 'home' %}">Home</a></li>
+
+<li><a href="{% url 'blogs' %}">Blogs</a></li>
+
+<li><a href="{% url 'recipes' %}">Recipes</a></li>
+
+<li><a href="{% url 'write' %}">Write</a></li>
+
+</ul>
+
+<div class="account">
+    <a href="{% url 'profile' %}" class="account1">Account</a>
+    <button class="subscribe">Subscribe</button>
+</div>
+
+</nav>
+
+{% block content %}
+
+{% endblock %}
+
+<section class="newsletter">
+
+    <h2>Stay Updated with Fresh Recipes</h2>
+
+    <p>
+        Get delicious recipes, cooking tips, and trending food ideas delivered straight to your inbox.
+        No spam, just tasty inspiration!
+    </p>
+
+    <div class="newsletter-form">
+
+        <input type="email" placeholder="Enter Email Address">
+
+        <button>Subscribe Now</button>
+
+    </div>
+
+    <span class="last">We respect your privacy. Unsubscribe anytime.</span>
+
+</section>
+
+
+<!-- FOOTER -->
+
+<footer class="footer">
+
+<div class="footer-container">
+
+    <!-- LOGO SECTION -->
+
+    <div class="footer-col">
+
+        <img src="{% static 'images/logofood.png' %}" class="footer-logo">
+
+        <p>Email: support@gmail.com</p>
+        <p>Phone: +91 XXXXX XXXXX</p>
+        <p>Location: Chennai, India</p>
+
+    </div>
+
+
+    <!-- QUICK LINKS -->
+
+    <div class="footer-col">
+
+        <h3>Quick Links</h3>
+
+        <a href="{% url 'home' %}">Home</a>
+        <a href="{% url 'blogs' %}">Blog</a>
+        <a href="{% url 'recipes' %}">Recipes</a>
+        <a href="{% url 'write' %}">Write</a>
+
+    </div>
+
+
+    <!-- CATEGORIES -->
+
+    <div class="footer-col">
+
+        <h3>Categories</h3>
+
+        <a href="#">Desserts</a>
+        <a href="#">Quick Meals</a>
+        <a href="#">Vegetarian</a>
+        <a href="#">Non-Vegetarian</a>
+        <a href="#">Drinks</a>
+
+    </div>
+
+
+    <!-- SUBSCRIBE -->
+
+    <div class="footer-col">
+
+        <h3>Subscribe to Our Newsletter</h3>
+
+        <p>Get fresh recipes and cooking inspiration every week.</p>
+
+        <div class="footer-subscribe">
+
+            <input type="email">
+
+            <button>Subscribe Now</button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<div class="footer-bottom">
+
+    <div></div>  <!-- empty left space -->
+
+    <p class="copyright">
+        © 2026 TastyBites. All Rights Reserved.<br><br>
+      
+        Privacy Policy | Terms & Conditions
+    
+    </p>
+ 
+    <div class="follow-us">
+        <span>Follow Us</span>
+
+        <a href="#"><i class="bi bi-facebook"></i></a>
+        <a href="#"><i class="bi bi-instagram"></i></a>
+        <a href="#"><i class="bi bi-twitter"></i></a>
+        <a href="#"><i class="bi bi-youtube"></i></a>
+    </div>
+
+</div>
+
+</footer>
+
+<script src="{% static 'js/carousel.js' %}"></script>
+
+</body>
+</html>

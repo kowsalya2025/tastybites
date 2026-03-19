@@ -1,0 +1,295 @@
+{% extends 'foodapp/base.html' %}
+{% load static %}
+
+{% block content %}
+
+<style>
+/* ===== HERO ===== */
+.hero {
+    margin-top: 30px;
+    position: relative;
+    height: 100vh;
+}
+
+.carousel img {
+    width: 100%;
+    height: 100vh;
+    object-fit: cover;
+}
+
+/* Overlay (light like Figma) */
+.overlay {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.2);
+    top: 0;
+}
+
+/* Center card */
+.hero-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* ===== LOGIN CARD ===== */
+.login-card {
+    width: 420px;
+    background: #fff;
+    padding: 35px 30px;
+    border-radius: 14px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+}
+
+/* Title */
+.login-card h2 {
+    text-align: center;
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+/* Subtitle */
+.sub {
+    text-align: center;
+    font-size: 14px;
+    color: #777;
+    margin-bottom: 20px;
+}
+
+/* Labels */
+.login-card label {
+    font-size: 16px;
+    font-weight: 500;
+}
+
+/* Inputs (soft Figma style) */
+.login-card input {
+    width: 100%;
+    padding: 14px;
+    margin: 8px 0;
+    border-radius: 8px;
+    border: none;
+    background: #f5f5f5;
+    font-size: 14px;
+}
+
+/* Password box */
+.password-box {
+    position: relative;
+    
+}
+
+.password-box span {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+}
+#password {
+    background-color: #f5f5f5 !important;
+}
+
+/* Forgot password */
+.forgot {
+    display: block;
+    text-align: right;
+    font-size: 12px;
+    color: #ff4d4d;
+    margin-top: 5px;
+    margin-bottom: 10px;
+}
+
+/* Button */
+.login-card button {
+    width: 100%;
+    padding: 12px;
+    background: #ff4d4d;
+    border: none;
+    color: #fff;
+    border-radius: 25px;
+    font-size: 14px;
+    font-weight: 600;
+    margin-top: 10px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.login-card button:hover {
+    background: #e63939;
+}
+
+/* Register */
+.register {
+    text-align: center;
+    margin-top: 10px;
+    font-size: 14px;
+}
+
+.register a {
+    color: #ff4d4d;
+    font-weight: 500;
+}
+
+/* Divider */
+hr {
+    margin: 15px 0;
+}
+
+/* Google button */
+.google-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    background: #f5f5f5;
+    padding: 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+/* Messages */
+.message {
+    color: red;
+    text-align: center;
+    margin-bottom: 10px;
+}
+.quick{
+    margin: 20px 0;
+    color: #777;
+}
+</style>
+
+<section class="hero">
+
+    <!-- Background -->
+    <div class="carousel">
+        <img src="{% static 'images/banner1.png' %}" alt="banner">
+    </div>
+
+    <div class="overlay"></div>
+
+
+         <div class="hero-content">
+
+        <div class="login-card">
+
+<!-- 🔴 LOGIN FORM -->
+<div id="loginForm">
+
+    <h2>“Welcome Back, Food Lover!”</h2>
+    <p class="sub">Discover, cook, and share delicious recipes.</p>
+
+    {% if messages %}
+        {% for message in messages %}
+            <p class="message">{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <label>User Name / Email Id</label>
+        {{ login_form.username }}
+
+        <label>Password</label>
+        <div class="password-box">
+            {{ login_form.password }}
+            <span id="eye" onclick="togglePassword()">👁️</span>
+        </div>
+
+        <a href="#" class="forgot">Forget Password?</a>
+
+        <button type="submit" name="login">Login</button>
+    </form>
+
+    <p class="register">
+        Don’t have an account?
+        <a href="#" onclick="showRegister()">Register</a>
+    </p>
+
+    <hr>
+    <p class="quick">Quick Login</p>
+
+    <div class="google-btn">
+        Continue With Google
+        <img src="https://cdn-icons-png.flaticon.com/512/281/281764.png" width="18">
+    </div>
+
+</div>
+
+
+<!-- 🟢 REGISTER FORM -->
+<div id="registerForm" style="display:none;">
+
+    <h2>“Join Our Food Community!”</h2>
+    <p class="sub">Create, share, and discover delicious recipes.</p>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <label>Username</label>
+        {{ register_form.username }}
+
+        <label>Password</label>
+        {{ register_form.password1 }}
+
+        <label>Confirm Password</label>
+        {{ register_form.password2 }}
+
+        <button type="submit" name="register">Register</button>
+    </form>
+
+    <p class="register">
+        Already have an account?
+        <a href="#" onclick="showLogin()">Login</a>
+    </p>
+    <hr>
+    <p class="quick">Quick Login</p>
+
+    <div class="google-btn">
+        Continue With Google
+        <img src="https://cdn-icons-png.flaticon.com/512/281/281764.png" width="18">
+    </div>
+
+</div>
+
+</div>
+
+    </div>
+    
+
+</section>
+
+<!-- JS -->
+<script>
+function togglePassword() {
+    const pass = document.getElementById("password");
+    const eye = document.getElementById("eye");
+
+    if (pass.type === "password") {
+        pass.type = "text";
+        eye.textContent = "🙈";
+    } else {
+        pass.type = "password";
+        eye.textContent = "👁️";
+    }
+}
+</script>
+
+<script>
+function showRegister(){
+    document.getElementById("loginForm").style.display = "none";
+    document.getElementById("registerForm").style.display = "block";
+}
+
+function showLogin(){
+    document.getElementById("registerForm").style.display = "none";
+    document.getElementById("loginForm").style.display = "block";
+}
+</script>
+{% endblock %}

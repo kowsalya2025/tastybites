@@ -1,0 +1,710 @@
+{% extends 'foodapp/base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+        
+.hero{
+position:relative;
+height:320px;
+overflow:hidden;
+}
+
+
+.slide{
+position:absolute;
+width:100%;
+height:100%;
+opacity:0;
+transition:0.8s;
+}
+
+.slide img{
+width:100%;
+height:100%;
+object-fit:cover;
+}
+
+
+
+/* HERO TEXT */
+
+.hero-content{
+position:absolute;
+top:60%;
+left:50%;
+transform:translate(-50%,-50%);
+text-align:center;
+color:black;
+}
+
+.hero-content h1{
+font-size:30px;
+margin-bottom:10px;
+}
+
+.hero-content p{
+font-size:16px;
+padding: 10px;
+line-height: 1.6;
+}
+
+/* ───────── PAGE WRAPPER ───────── */
+    .page-wrapper {
+      max-width: 90%;
+      margin: 0 auto;
+      padding: 28px 24px;
+      display: flex;
+      gap: 28px;
+      align-items: flex-start;
+    }
+ 
+    /* ───────── LEFT COLUMN ───────── */
+    .left-col { flex: 1; min-width: 0; }
+ 
+    .top-bar {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 22px;
+    }
+ 
+    /* Categories */
+    .categories-card {
+      width: 222px; flex-shrink: 0;
+      border: 1px solid #ddd; border-radius: 6px;
+      overflow: hidden; background: #fff;
+      box-shadow: 0 1px 4px rgba(0,0,0,.05);
+    }
+    .categories-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 18px; cursor: pointer; user-select: none; background: #fff;
+    }
+    .categories-header h3 {
+      font-family: 'Merriweather', serif; font-size: .98rem; font-weight: 700; color: #111;
+    }
+    .toggle-arrow {
+      font-size: .9rem; color: #666; display: inline-block;
+      transition: transform .25s ease;
+    }
+    .categories-card.collapsed .toggle-arrow { transform: rotate(180deg); }
+ 
+    .categories-body {
+      max-height: 360px; opacity: 1; overflow: hidden;
+      transition: max-height .3s ease, opacity .25s ease;
+    }
+    .categories-card.collapsed .categories-body { max-height: 0; opacity: 0; }
+ 
+    .cat-item-all {
+      background: #e74c3c; color: #fff;
+      padding: 11px 18px; font-weight: 700; font-size: .93rem; cursor: pointer;
+    }
+    .cat-item {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 11px 18px; border-top: 1px solid #eee;
+      font-size: .91rem; cursor: pointer; transition: background .15s; color: #333;
+    }
+    .cat-item:hover { background: #fef5f5; color: #e74c3c; }
+    .cat-count { color: #aaa; font-size: .85rem; }
+ 
+    /* Pagination */
+    .pagination-row {
+      display: flex; align-items: center; gap: 4px;
+      justify-content: end;
+      font-size: .88rem; color: #444; padding-top: 4px;
+    }
+    .pagination-row .label { margin-right: 2px; color: #666; }
+    .page-btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 29px; height: 29px; border-radius: 4px; border: none;
+      background: transparent; cursor: pointer; font-size: .88rem; color: #444;
+      transition: background .15s;
+    }
+    .page-btn:hover { background: #f0f0f0; }
+    .page-btn.active { background: #e74c3c; color: #fff; font-weight: 700; }
+    .next-btn {
+      display: inline-flex; align-items: center; gap: 2px;
+      color: #333; font-size: .88rem; cursor: pointer; font-weight: 600;
+    }
+ 
+    /* ── Blog cards ── */
+    .blog-cards { display: flex; flex-direction: column; gap: 18px; }
+ 
+    .blog-card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 1px 6px rgba(0,0,0,.07);
+      display: flex;
+      gap: 0;
+      overflow: hidden;
+      transition: box-shadow .2s;
+    }
+    .blog-card:hover { box-shadow: 0 4px 18px rgba(0,0,0,.12); }
+ 
+    /* Food image */
+    .blog-card-img {
+      width: 220px;
+      min-height: 200px;
+      flex-shrink: 0;
+      object-fit: cover;
+      display: block;
+    }
+ 
+    /* Image placeholder (when no real img) */
+       .img-ph {
+  width: 320px;
+  min-height: 300px;
+  flex-shrink: 0;
+  overflow: hidden;   /* ← key line */
+}
+
+.img-ph img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+ 
+    .blog-card-body {
+      flex: 1; min-width: 0;
+      padding: 22px 24px;
+      display: flex; flex-direction: column; gap: 8px;
+    }
+ 
+    .blog-card-date { color: #e74c3c; font-size: .82rem; font-weight: 600; }
+ 
+    /* Title: default dark, hover → red */
+    .blog-card-title {
+      font-size: 1.18rem; font-weight: 700;
+      color: #1a1a1a;
+      line-height: 1.4; cursor: pointer;
+      transition: color .2s;
+    }
+    .blog-card:hover .blog-card-title { color: #e74c3c; }
+ 
+    .blog-card-desc { font-size: .9rem; color: #555; line-height: 1.65; }
+ 
+    .blog-card-meta {
+      display: flex; align-items: center; gap: 6px;
+      font-size: .85rem; color: #888; margin-top: 2px;
+    }
+ 
+    .blog-card-author { font-size: .85rem; color: #555; margin-top: 2px; }
+ 
+    .btn-read-now {
+      display: inline-block;
+      margin-top: 6px;
+      align-self: flex-start;
+      background: transparent;
+      border: 2px solid #e74c3c;
+      color: #e74c3c;
+      border-radius: 30px;
+      padding: 8px 22px;
+      font-size: .88rem; font-weight: 700;
+      cursor: pointer;
+      transition: background .2s, color .2s;
+    }
+    .btn-read-now:hover { background: #e74c3c; color: #fff; }
+ 
+    /* Card nav */
+    .card-nav { display: flex; justify-content: center; gap: 10px; margin-top: 8px; }
+    .card-nav-btn {
+      width: 40px; height: 40px;
+      background: rgba(40,40,40,.72);
+      border: none; border-radius: 8px; color: #fff; font-size: 1.25rem;
+      cursor: pointer; display: inline-flex; align-items: center; justify-content: center;
+      transition: background .15s;
+    }
+    .card-nav-btn:hover { background: #e74c3c; }
+ 
+    /* ───────── RIGHT SIDEBAR ───────── */
+    .right-sidebar {
+      width: 400px; flex-shrink: 0;
+      display: flex; flex-direction: column; gap: 22px;
+    }
+ 
+    /* Subscribe card */
+    .subscribe-card {
+        margin-top: 20px;
+      border: 2px solid #e74c3c; border-radius: 12px;
+      padding: 30px 24px; text-align: center; background: #fff;
+    }
+    .subscribe-card h2 {
+      font-family: 'Merriweather', serif;
+      font-size: 1.5rem; font-weight: 700; color: #111;
+      margin-bottom: 12px; line-height: 1.5;
+    }
+    .subscribe-card .sub-desc { font-size: 1rem; color:  #111; line-height: 1.65; margin-bottom: 18px; }
+    .btn-subscribe-card {
+      display: inline-block; background: #e74c3c; color: #fff; border: none;
+      border-radius: 40px; padding: 12px 34px;
+      font-size: 1rem; font-weight: 700; cursor: pointer;
+      margin-bottom: 16px; transition: background .15s;
+    }
+    .btn-subscribe-card:hover { background: #c0392b; }
+    .sub-note { font-size: 1rem; color: #111; line-height: 1.6; }
+ 
+    /* Lindsay / About card */
+    .about-card {
+      border: 2px solid #e74c3c; border-radius: 12px;
+      overflow: hidden; background: #fff; text-align: center;
+    }
+    .about-card-img {
+      width: 100%; height: 100%; object-fit: cover;
+      background: linear-gradient(135deg, #e8d5c4, #c9a882);
+      display: flex; align-items: center; justify-content: center; font-size: 4rem;
+    }
+    .about-card-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+ 
+    .about-card-body { padding: 20px 18px 22px; }
+    .about-tagline {
+      font-size: .75rem; font-weight: 700; letter-spacing: .12em;
+      color: #111; text-transform: uppercase; margin-bottom: 4px;
+    }
+    .about-name {
+      font-family: "Satisfy", cursive;
+  font-weight: 400;
+  font-style: normal;
+      font-size: 1.8rem; color: #e74c3c; line-height: 1.2; margin-bottom: 15px;
+    }
+    .about-desc { font-size: .85rem; color: #111; line-height: 1.7; margin-bottom: 18px; }
+    .btn-learn-more {
+      background: #e74c3c; color: #fff; border: none;
+      border-radius: 30px; padding: 15px 28px;
+      font-size: .88rem; font-weight: 700; cursor: pointer;
+      transition: background .15s;
+    }
+    .btn-learn-more:hover { background: #c0392b; }
+
+
+
+    /* social */
+    .newsletter-bar {
+    background: #f05a5a;
+    border-radius: 16px;
+    margin: 32px auto;
+    max-width: 85%;
+    padding: 36px 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 40px;
+    flex-wrap: wrap;
+  }
+ 
+  /* Left: Follow us + social icons */
+  .newsletter-bar__left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+ 
+  .newsletter-bar__follow-text {
+    font-family: 'Lato', sans-serif;
+    font-size: 1rem;
+    color: #fff;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+ 
+  .social-icons-box {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(255,255,255,0.22);
+    border-radius: 12px;
+    padding: 10px 16px;
+  }
+ 
+  .social-icon {
+    width: 38px;
+    height: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #1a1a1a;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: background .2s, transform .2s;
+    cursor: pointer;
+  }
+  .social-icon:hover {
+    background: rgba(255,255,255,0.3);
+    transform: translateY(-2px);
+  }
+  .social-icon svg {
+    width: 22px;
+    height: 22px;
+    stroke: #1a1a1a;
+    fill: none;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+ 
+  /* Right: Sign up form */
+  .newsletter-bar__right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+  }
+ 
+  .newsletter-bar__heading {
+    font-family: 'Dancing Script', cursive;
+    font-size: 1.7rem;
+    color: #fff;
+    font-weight: 600;
+    line-height: 1.2;
+  }
+ 
+  .newsletter-bar__form {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+ 
+  .newsletter-bar__input {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: .92rem;
+    font-family: 'Lato', sans-serif;
+    color: #333;
+    background: #fff;
+    outline: none;
+    width: 260px;
+    transition: box-shadow .2s;
+  }
+  .newsletter-bar__input::placeholder { color: #aaa; }
+  .newsletter-bar__input:focus { box-shadow: 0 0 0 3px rgba(255,255,255,0.5); }
+ 
+  .newsletter-bar__btn {
+    padding: 12px 26px;
+    border: none;
+    border-radius: 8px;
+    background: #fff;
+    color: #333;
+    font-size: .92rem;
+    font-family: 'Lato', sans-serif;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background .2s, color .2s, transform .15s;
+    white-space: nowrap;
+  }
+  .newsletter-bar__btn:hover {
+    background: #1a1a1a;
+    color: #fff;
+    transform: translateY(-1px);
+  }
+ 
+  /* Success message */
+  .newsletter-bar__success {
+    display: none;
+    color: #fff;
+    font-size: .88rem;
+    font-weight: 600;
+    background: rgba(255,255,255,0.2);
+    padding: 8px 16px;
+    border-radius: 8px;
+  }
+ 
+  @media (max-width: 768px) {
+    .newsletter-bar {
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 28px 24px;
+    }
+    .newsletter-bar__input { width: 180px; }
+  }
+
+
+
+</style>
+<section class="hero">
+
+<div class="carousel">
+
+<div class="slide active">
+<img src="{% static 'images/banner3.png' %}">
+</div>
+</div>
+
+<div class="hero-content">
+
+<h1>Our Food Blogs</h1>
+
+<p>Discover cooking tips, trending recipes, and kitchen inspiration<p>
+</div>
+</section>
+
+
+
+<!-- ── PAGE ── -->
+<div class="page-wrapper">
+ 
+  <!-- LEFT COLUMN -->
+  <div class="left-col">
+ 
+    <!-- Top bar: categories + pagination -->
+    <div class="top-bar">
+      <div class="categories-card" id="catCard">
+        <div class="categories-header" id="catToggle">
+          <h3>Categories</h3>
+          <span class="toggle-arrow">&#94;</span>
+        </div>
+        <div class="categories-body">
+          <div class="cat-item-all">All</div>
+          <div class="cat-item"><span>1. Desserts</span><span class="cat-count">150</span></div>
+          <div class="cat-item"><span>2. Quick Meals</span><span class="cat-count">175</span></div>
+          <div class="cat-item"><span>3. Vegetarian</span><span class="cat-count">95</span></div>
+          <div class="cat-item"><span>4. Non-Veg</span><span class="cat-count">120</span></div>
+          <div class="cat-item"><span>5. Drinks</span><span class="cat-count">95</span></div>
+        </div>
+      </div>
+ 
+    
+    </div>
+ 
+    <!-- Blog Cards -->
+    <div class="blog-cards" id="blogCards">
+ 
+      <!-- Card 1 -->
+      <div class="blog-card">
+        <div class="img-ph pasta"><img src="{% static 'images/blogcard1.avif'%}" alt=""></div>
+        <div class="blog-card-body">
+          <div class="blog-card-date">Feb 24, 2026</div>
+          <div class="blog-card-title">Creamy Spinach &amp; Mushroom Pasta</div>
+          <p class="blog-card-desc">A comforting vegetarian pasta dish loaded with fresh spinach, mushrooms, and creamy sauce.</p>
+          <div class="blog-card-meta">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+            Read 5 min
+          </div>
+          <div class="blog-card-author">By, Charles</div>
+          <button class="btn-read-now">Read Now</button>
+        </div>
+      </div>
+ 
+      <!-- Card 2 -->
+      <div class="blog-card">
+        <div class="img-ph mango"><img src="{% static 'images/blogcard2.jpg'%}" alt=""></div>
+        <div class="blog-card-body">
+          <div class="blog-card-date">Feb 24, 2026</div>
+          <div class="blog-card-title">Refreshing Summer Mango Smoothie</div>
+          <p class="blog-card-desc">A cool and tropical mango smoothie recipe that's perfect for hot summer afternoons.</p>
+          <div class="blog-card-meta">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+            Read 5 min
+          </div>
+          <div class="blog-card-author">By, Charles</div>
+          <button class="btn-read-now">Read Now</button>
+        </div>
+      </div>
+ 
+      <!-- Card 3 -->
+      <div class="blog-card">
+        <div class="img-ph chicken"><img src="{% static 'images/blogcard3.jpg'%}" alt=""></div>
+        <div class="blog-card-body">
+          <div class="blog-card-date">Feb 23, 2026</div>
+          <div class="blog-card-title">20-Minute Garlic Butter Chicken</div>
+          <p class="blog-card-desc">A quick and flavourful garlic butter chicken recipe that comes together in just 20 minutes on a weeknight.</p>
+          <div class="blog-card-meta">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+            Read 4 min
+          </div>
+          <div class="blog-card-author">By, Charles</div>
+          <button class="btn-read-now">Read Now</button>
+        </div>
+      </div>
+
+      <!-- Card 4 -->
+      <div class="blog-card">
+        <div class="img-ph mango"><img src="{% static 'images/blogcard4.jpg'%}" alt=""></div>
+        <div class="blog-card-body">
+          <div class="blog-card-date">Feb 24, 2026</div>
+          <div class="blog-card-title">Refreshing Summer Mango Smoothie</div>
+          <p class="blog-card-desc">A cool and tropical mango smoothie recipe that's perfect for hot summer afternoons.</p>
+          <div class="blog-card-meta">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+            Read 5 min
+          </div>
+          <div class="blog-card-author">By, Charles</div>
+          <button class="btn-read-now">Read Now</button>
+        </div>
+      </div>
+ 
+    </div>
+    <!-- /.blog-cards -->
+ 
+    <!-- Prev / Next arrows -->
+
+     
+
+    <div class="card-nav">
+      <button class="card-nav-btn" id="prevBtn">&#8249;</button>
+      <button class="card-nav-btn" id="nextBtn">&#8250;</button>
+    </div>
+ 
+  </div><!-- /.left-col -->
+ 
+  <!-- RIGHT SIDEBAR -->
+  <aside class="right-sidebar">
+
+     <div class="pagination-row">
+        <span class="label">Page</span>
+        <a class="page-btn active">1</a>
+        <a class="page-btn">2</a>
+        <a class="page-btn">3</a>
+        <span style="color:#bbb;padding:0 2px;">…</span>
+        <a class="page-btn">8</a>
+        <a class="next-btn">Next &rsaquo;</a>
+      </div>
+ 
+    <!-- Subscribe -->
+    <div class="subscribe-card">
+      <h2>Join the TastyBites Community</h2>
+      <p class="sub-desc">Love delicious recipes? Don't miss out on our latest food blogs and cooking tips!</p>
+      <button class="btn-subscribe-card">Subscribe Now</button>
+      <p class="sub-note">Our email newsletter delivers our new recipes and latest updates. It's always free and you can unsubscribe any time.</p>
+    </div>
+ 
+    <!-- Lindsay About card -->
+    <div class="about-card">
+      <div class="about-card-img"><img src="{% static 'images/blogcardright.jpg'%}" alt=""></div>
+      <div class="about-card-body">
+        <p class="about-tagline">HI! I'M LINDSAY</p>
+        <p class="about-name">Nice to meet you</p>
+        <p class="about-desc">I'm a former 4th grade teacher, now full time blogger. My husband Bjork and I live in Minnesota. Favorite things include my camera, lake days, and dark chocolate.</p>
+        <button class="btn-learn-more">Learn More</button>
+      </div>
+    </div>
+ 
+  </aside>
+ 
+</div><!-- /.page-wrapper -->
+
+<!-- social part -->
+ <div class="newsletter-bar">
+ 
+  <!-- LEFT: Follow us -->
+  <div class="newsletter-bar__left">
+    <span class="newsletter-bar__follow-text">Follow us ,</span>
+    <div class="social-icons-box">
+ 
+      <!-- Facebook -->
+      <a class="social-icon" href="#" aria-label="Facebook">
+        <svg viewBox="0 0 24 24">
+          <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
+        </svg>
+      </a>
+ 
+      <!-- Instagram -->
+      <a class="social-icon" href="#" aria-label="Instagram">
+        <svg viewBox="0 0 24 24">
+          <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+          <circle cx="12" cy="12" r="4"/>
+          <circle cx="17.5" cy="6.5" r="0" fill="#1a1a1a" stroke="none"/>
+          <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" stroke-width="3"/>
+        </svg>
+      </a>
+ 
+      <!-- YouTube -->
+      <a class="social-icon" href="#" aria-label="YouTube">
+        <svg viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="10"/>
+          <polygon points="10,8 16,12 10,16" fill="#1a1a1a" stroke="none"/>
+        </svg>
+      </a>
+ 
+      <!-- Twitter / X -->
+      <a class="social-icon" href="#" aria-label="Twitter">
+        <svg viewBox="0 0 24 24">
+          <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53A4.48 4.48 0 0 0 22.43.36a9 9 0 0 1-2.88 1.1A4.52 4.52 0 0 0 16.11 0c-2.5 0-4.52 2.02-4.52 4.52 0 .35.04.7.11 1.03C7.69 5.37 4.07 3.58 1.64.9a4.48 4.48 0 0 0-.61 2.27c0 1.57.8 2.95 2.01 3.76a4.49 4.49 0 0 1-2.05-.57v.06c0 2.19 1.56 4.02 3.63 4.43a4.5 4.5 0 0 1-2.04.08 4.53 4.53 0 0 0 4.23 3.14A9.07 9.07 0 0 1 0 19.54a12.8 12.8 0 0 0 6.92 2.03c8.3 0 12.85-6.88 12.85-12.85 0-.2 0-.39-.01-.58A9.18 9.18 0 0 0 23 3z"/>
+        </svg>
+      </a>
+ 
+    </div>
+  </div>
+ 
+  <!-- RIGHT: Email signup -->
+  <div class="newsletter-bar__right">
+    <div class="newsletter-bar__heading">Sign Up for Email Updates</div>
+    <div class="newsletter-bar__form">
+      <input
+        class="newsletter-bar__input"
+        type="email"
+        id="newsletterEmail"
+        placeholder="Enter Email Address"
+      />
+      <button class="newsletter-bar__btn" onclick="subscribeNewsletter()">Subscribe</button>
+    </div>
+    <div class="newsletter-bar__success" id="newsletterSuccess">
+      ✓ You're subscribed! Check your inbox.
+    </div>
+  </div>
+ 
+</div>
+ 
+<script>
+  // Categories toggle
+  document.getElementById('catToggle').addEventListener('click', () => {
+    document.getElementById('catCard').classList.toggle('collapsed');
+  });
+ 
+  // Card prev / next
+  const cards = document.querySelectorAll('.blog-card');
+  const VISIBLE = 3;
+  let page = 0;
+  const totalPages = Math.ceil(cards.length / VISIBLE);
+ 
+  function showPage(p) {
+    cards.forEach((c, i) => {
+      c.style.display = (i >= p * VISIBLE && i < (p + 1) * VISIBLE) ? 'flex' : 'none';
+    });
+  }
+  cards.forEach(c => c.style.display = 'flex');
+ 
+  document.getElementById('prevBtn').addEventListener('click', () => {
+    page = (page - 1 + totalPages) % totalPages;
+    showPage(page);
+  });
+  document.getElementById('nextBtn').addEventListener('click', () => {
+    page = (page + 1) % totalPages;
+    showPage(page);
+  });
+</script>
+
+<script>
+  function subscribeNewsletter() {
+    const emailInput = document.getElementById('newsletterEmail');
+    const successMsg = document.getElementById('newsletterSuccess');
+    const email = emailInput.value.trim();
+ 
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      emailInput.style.boxShadow = '0 0 0 3px rgba(255,80,80,0.6)';
+      emailInput.placeholder = 'Please enter a valid email';
+      setTimeout(() => {
+        emailInput.style.boxShadow = '';
+        emailInput.placeholder = 'Enter Email Address';
+      }, 2000);
+      return;
+    }
+ 
+    // Show success
+    emailInput.style.display = 'none';
+    document.querySelector('.newsletter-bar__btn').style.display = 'none';
+    successMsg.style.display = 'block';
+ 
+    // TODO: Send email to Django backend via fetch
+    // fetch('/subscribe/', {
+    //   method: 'POST',
+    //   headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
+    //   body: JSON.stringify({ email })
+    // });
+  }
+</script>
+
+{% endblock %}

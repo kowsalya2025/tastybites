@@ -1,0 +1,735 @@
+{% extends 'foodapp/base.html' %}
+{% load static %}
+
+{% block content %}
+
+<style>
+/* ===== PAGE LAYOUT ===== */
+.write-page {
+    margin-top: 100px;
+    min-height: 100vh;
+    padding: 40px 60px;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+/* ===== HEADER ===== */
+.write-header { text-align: center; margin-bottom: 30px; position: relative; }
+.write-header h1 { font-size: 32px; font-weight: 700; color: #1a1a1a; margin: 0 0 6px 0; }
+.write-header p  { font-size: 14px; color: #666; margin: 0; }
+
+.header-actions { position: absolute; right: 0; top: 0; display: flex; gap: 12px; }
+.btn-save-draft {
+    background: #fff; color: #1a1a1a; border: 1.5px solid #ccc;
+    padding: 10px 22px; border-radius: 8px; font-size: 14px; font-weight: 500;
+    cursor: pointer; transition: border-color 0.2s;
+}
+.btn-save-draft:hover { border-color: #ff4d4d; }
+.btn-publish {
+    background: #ff4d4d; color: #fff; border: none;
+    padding: 10px 26px; border-radius: 8px; font-size: 14px; font-weight: 600;
+    cursor: pointer; transition: background 0.2s;
+}
+.btn-publish:hover { background: #e03c3c; }
+
+/* ===== BODY ===== */
+.write-body { display: flex; gap: 30px; align-items: flex-start; }
+
+/* ===== MAIN FORM ===== */
+.write-form { flex: 1; display: flex; flex-direction: column; gap: 24px; }
+
+.form-section label {
+    display: block; font-size: 18px; font-weight: 600;
+    color: #1a1a1a; margin-bottom: 6px;
+}
+.form-section .hint { font-size: 16px; color: #121212; margin-bottom: 10px; display: block; }
+
+.form-section input[type="text"],
+.form-section input[type="number"],
+.form-section textarea,
+.form-section select {
+    width: 100%; border: 1.5px solid #ddd; border-radius: 8px;
+    padding: 13px 16px; font-size: 14px; color: #121212;
+    background: rgba(236, 232, 232, 0.775); box-sizing: border-box; outline: none;
+    transition: border-color 0.2s; font-family: inherit;
+}
+.form-section input[type="text"]:focus,
+.form-section input[type="number"]:focus,
+.form-section textarea:focus,
+.form-section select:focus { border-color: #ff4d4d; }
+.form-section textarea { resize: none; height: 150px; }
+.form-section input::placeholder,
+.form-section textarea::placeholder { color: #bbb; }
+.form-section select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23aaa' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 16px center; cursor: pointer;
+}
+
+/* ===== UPLOAD ===== */
+.upload-area { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+.upload-preview {
+    width: 300px; height: 200px; background: #e8e8e8; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden; border: 2px dashed #ccc; flex-shrink: 0;
+}
+.upload-preview img { width: 100%; height: 100%; object-fit: cover; display: none; }
+.upload-placeholder { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.upload-placeholder span { font-size: 12px; color: #999; }
+.btn-upload {
+    background: #fff; color: #1a1a1a; border: 1.5px solid #ff4d4d;
+    padding: 10px 28px; border-radius: 8px; font-size: 14px; font-weight: 500;
+    cursor: pointer; display: block; margin-bottom: 8px; transition: background 0.2s, color 0.2s;
+}
+.btn-upload:hover { background: #ff4d4d; color: #fff; }
+.upload-hint { font-size: 12px; color: #999; margin: 0; }
+#coverImageInput { display: none; }
+
+/* ===== META ROW ===== */
+.meta-row { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 14px; }
+.meta-row .form-section { margin: 0; }
+.form-section .blogCategory{
+    padding: 5px;
+    border: 1px solid black;
+}
+
+/* ===== SECTION HEADERS ===== */
+.section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.section-header h3 { font-size: 15px; font-weight: 600; color: #1a1a1a; margin: 0; }
+.btn-add {
+    background: #ff4d4d; color: #fff; border: none;
+    padding: 7px 18px; border-radius: 8px; font-size: 13px; font-weight: 600;
+    cursor: pointer; transition: background 0.2s;
+}
+.btn-add:hover { background: #e03c3c; }
+
+/* ===== INGREDIENTS ===== */
+.ingredient-list { display: flex; flex-direction: column; gap: 8px; }
+.ingredient-item {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 14px; color: #333; padding: 6px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+.ingredient-item:last-child { border-bottom: none; }
+.ingredient-item .item-num { color: #888; font-size: 13px; width: 22px; flex-shrink: 0; }
+.ingredient-item > span:not(.item-num) { flex: 1; }
+.icon-btn {
+    background: transparent; border: none; cursor: pointer;
+    padding: 4px 6px; font-size: 15px; color: #bbb; transition: color 0.15s;
+}
+.icon-btn:hover { color: #ff4d4d; }
+
+.add-ingredient-row { display: flex; gap: 10px; margin-top: 10px; }
+.add-ingredient-row input {
+    flex: 1; border: 1.5px solid #ddd; border-radius: 8px;
+    padding: 10px 14px; font-size: 14px; outline: none; font-family: inherit;
+    transition: border-color 0.2s;
+}
+.add-ingredient-row input:focus { border-color: #ff4d4d; }
+.btn-confirm {
+    background: #ff4d4d; color: #fff; border: none;
+    padding: 10px 18px; border-radius: 8px; font-size: 13px; font-weight: 600;
+    cursor: pointer; white-space: nowrap;
+}
+
+.ingredient-item input.edit-input {
+    flex: 1; border: 1.5px solid #ff4d4d; border-radius: 6px;
+    padding: 5px 10px; font-size: 14px; outline: none; font-family: inherit;
+}
+
+/* ===== STEPS ===== */
+.steps-list { display: flex; flex-direction: column; gap: 10px; }
+.step-item { display: flex; align-items: flex-start; gap: 10px; }
+.step-label { font-size: 13px; font-weight: 600; color: #555; padding-top: 13px; white-space: nowrap; min-width: 60px; }
+.step-item textarea {
+    flex: 1; border: 1.5px solid #ddd; border-radius: 8px;
+    padding: 12px 14px; font-size: 14px; color: #333;
+    background: #fff; outline: none; resize: none; font-family: inherit;
+    height: 70px; transition: border-color 0.2s;
+}
+.step-item textarea:focus { border-color: #ff4d4d; }
+.step-item .icon-btn { padding-top: 12px; }
+
+.add-step-row { display: flex; gap: 10px; margin-top: 8px; align-items: flex-end; }
+.add-step-row textarea {
+    flex: 1; border: 1.5px solid #ddd; border-radius: 8px;
+    padding: 12px 14px; font-size: 14px; color: #333;
+    background: #fff; outline: none; resize: none; font-family: inherit;
+    height: 60px; transition: border-color 0.2s;
+}
+.add-step-row textarea:focus { border-color: #ff4d4d; }
+.add-step-row textarea::placeholder { color: #bbb; }
+
+/* ===== RICH TEXT ===== */
+.editor-toolbar {
+    display: flex; gap: 6px; padding: 10px 12px; background: #fff;
+    border: 1.5px solid #ddd; border-bottom: none; border-radius: 8px 8px 0 0; flex-wrap: wrap;
+}
+.toolbar-btn {
+    background: transparent; border: none; padding: 5px 9px; border-radius: 5px;
+    cursor: pointer; font-size: 14px; font-weight: 600; color: #444; transition: background 0.15s;
+}
+.toolbar-btn:hover { background: #f0f0f0; }
+.toolbar-separator { width: 1px; background: #ddd; margin: 0 4px; align-self: stretch; }
+#blogContent {
+    min-height: 200px; border: 1.5px solid #ddd; border-top: none;
+    border-radius: 0 0 8px 8px; padding: 16px; background: #fff;
+    outline: none; font-size: 14px; line-height: 1.7; color: #333;
+}
+#blogContent:empty::before { content: "Write your full blog content here..."; color: #bbb; }
+
+/* ===== SETTINGS PANEL ===== */
+.settings-panel {
+    width: 340px; background: #fff; border-radius: 14px;
+    padding: 24px; border: 1.5px solid #eee;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    flex-shrink: 0; position: sticky; top: 20px;
+}
+.settings-panel h3 { font-size: 20px; font-weight: 700; margin: 0 0 22px 0; color: #1a1a1a; }
+.settings-group { margin-bottom: 24px; }
+.settings-group h4 { font-size: 15px; font-weight: 600; color: #1a1a1a; margin: 0 0 14px 0; }
+
+.slider-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.slider-row > label { font-size: 13px; color: #555; width: 70px; }
+.slider-row .value { font-size: 13px; font-weight: 600; color: #ff4d4d; width: 38px; text-align: right; }
+.slider-wrap { flex: 1; margin: 0 10px; }
+input[type="range"] {
+    -webkit-appearance: none; width: 100%; height: 4px;
+    border-radius: 2px; background: #ffd0d0; outline: none; cursor: pointer;
+}
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 18px; height: 18px;
+    border-radius: 50%; background: #ff4d4d; cursor: pointer;
+    box-shadow: 0 2px 6px rgba(255,77,77,0.35);
+}
+
+.corner-options { display: flex; gap: 8px; flex-wrap: wrap; }
+.corner-btn {
+    border: 1.5px solid #ddd; background: #fff; padding: 7px 14px;
+    border-radius: 6px; font-size: 13px; color: #555; cursor: pointer; transition: all 0.15s;
+}
+.corner-btn.active, .corner-btn:hover { border-color: #ff4d4d; color: #ff4d4d; background: #fff8f8; }
+
+.image-layout-options { display: flex; flex-direction: column; gap: 8px; }
+.layout-option {
+    border: 1.5px solid #eee; border-radius: 8px; padding: 10px 14px;
+    font-size: 13px; color: #555; cursor: pointer; transition: all 0.15s;
+    display: flex; align-items: center; gap: 8px;
+}
+.layout-option.active, .layout-option:hover { border-color: #ff4d4d; color: #ff4d4d; background: #fff8f8; }
+
+.btn-add-images {
+    background: #ff4d4d; color: #fff; border: none; padding: 11px 20px;
+    border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer;
+    width: 100%; margin-top: 12px; transition: background 0.2s;
+}
+.btn-add-images:hover { background: #e03c3c; }
+
+.settings-tags-input {
+    width: 100%; border: 1.5px solid #ddd; border-radius: 8px;
+    padding: 12px 14px; font-size: 14px; color: #333;
+    box-sizing: border-box; outline: none; font-family: inherit;
+    transition: border-color 0.2s;
+}
+.settings-tags-input:focus { border-color: #ff4d4d; }
+.settings-tags-input::placeholder { color: #bbb; }
+.settings-tags-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.stag-chip {
+    background: #fff0f0; color: #ff4d4d; border: 1px solid #ffcece;
+    padding: 4px 10px; border-radius: 20px; font-size: 12px;
+    display: flex; align-items: center; gap: 4px;
+}
+.stag-chip .rm { cursor: pointer; font-weight: bold; font-size: 13px; }
+
+.comment-setting { display: flex; align-items: center; gap: 10px; font-size: 14px; color: #333; }
+.comment-setting input[type="checkbox"] { width: 18px; height: 18px; accent-color: #ff4d4d; cursor: pointer; }
+.comment-setting label { font-weight: 400; cursor: pointer; }
+
+/* ===== TOAST ===== */
+.toast {
+    position: fixed; bottom: 30px; right: 30px;
+    background: #1a1a1a; color: #fff; padding: 14px 22px;
+    border-radius: 10px; font-size: 14px; font-weight: 500; z-index: 999;
+    opacity: 0; transform: translateY(20px); transition: all 0.3s ease; pointer-events: none;
+}
+.toast.show { opacity: 1; transform: translateY(0); }
+.toast.success { border-left: 4px solid #4caf50; }
+.toast.info    { border-left: 4px solid #ff4d4d; }
+</style>
+
+<div class="write-page">
+
+    <!-- HEADER -->
+    <div class="write-header">
+        <h1>Write a New Blog Post</h1>
+        <p>Create and share your delicious recipe with the world.</p>
+        <div class="header-actions">
+            <button class="btn-save-draft" id="saveDraftBtn">Save Draft</button>
+            <button class="btn-publish"    id="publishBtn">Publish</button>
+        </div>
+    </div>
+
+    <!-- BODY -->
+    <div class="write-body">
+
+        <!-- ===== LEFT FORM ===== -->
+        <div class="write-form">
+
+            <!-- Blog Title -->
+            <div class="form-section">
+                <label>Blog Title</label>
+                <span class="hint">Enter your recipe title here</span>
+                <input type="text" id="blogTitle" placeholder="Example: Creamy Spinach &amp; Mushroom Pasta">
+            </div>
+
+            <!-- Short Description -->
+            <div class="form-section">
+                <label>Short Description</label>
+                <textarea id="blogDesc" placeholder="Write a short summary of your recipe (150–200 characters)"></textarea>
+            </div>
+
+            <!-- Upload Cover Image -->
+            <div class="form-section">
+                <label>Upload Cover Image</label>
+                <div class="upload-area">
+                    <div class="upload-preview" id="uploadPreview">
+                        <div class="upload-placeholder" id="uploadPlaceholder">
+                            <svg width="52" height="52" viewBox="0 0 52 52" fill="none">
+                                <rect x="4" y="10" width="44" height="32" rx="5" stroke="#bbb" stroke-width="2"/>
+                                <circle cx="17" cy="21" r="4" stroke="#bbb" stroke-width="2"/>
+                                <path d="M4 36l12-11 8 8 6-6 14 15" stroke="#bbb" stroke-width="2" stroke-linejoin="round"/>
+                            </svg>
+                            <span>Preview</span>
+                        </div>
+                        <img id="previewImg" src="" alt="Preview">
+                    </div>
+                    <div>
+                        <input type="file" id="coverImageInput" accept="image/*">
+                        <button class="btn-upload" onclick="document.getElementById('coverImageInput').click()">Upload</button>
+                        <p class="upload-hint">Recommended size: 1200 x 800px</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Meta: Category / Prep Time / Cook Time / Servings -->
+            <div class="meta-row">
+                <div class="form-section">
+                    <label>Category</label>
+                    <select id="blogCategory">
+                        <option value="">Select</option>
+                         <option>Desserts</option>
+                        <option>Quick Meals</option>
+                        <option>Vegetarian</option>
+                        <option>Non-Veg</option>
+                        <option>Drinks</option>
+                        
+                    </select>
+                </div>
+                <div class="form-section">
+                    <label>Preparation Time</label>
+                    <input type="text" id="prepTime" placeholder="15 minutes">
+                </div>
+                <div class="form-section">
+                    <label>Cooking Time</label>
+                    <input type="text" id="cookTime" placeholder="e.g., 20 minutes">
+                </div>
+                <div class="form-section">
+                    <label>Servings</label>
+                    <input type="number" id="servings" placeholder="Enter number of servings" min="1">
+                </div>
+            </div>
+
+            <!-- Add Ingredients -->
+            <div class="form-section">
+                <div class="section-header">
+                    <h3>Add Ingredients</h3>
+                    <button class="btn-add" id="showAddIngredient">Add</button>
+                </div>
+                <div class="ingredient-list" id="ingredientList"></div>
+                <div class="add-ingredient-row" id="addIngredientRow" style="display:none;">
+                    <input type="text" id="newIngredient" placeholder="e.g. Chicken - 1kg">
+                    <button class="btn-confirm" onclick="confirmIngredient()">✓ Add</button>
+                </div>
+            </div>
+
+            <!-- Preparation Steps -->
+            <div class="form-section">
+                <div class="section-header">
+                    <h3>Preparation Steps</h3>
+                </div>
+                <div class="steps-list" id="stepsList"></div>
+                <div class="add-step-row">
+                    <textarea id="newStep" placeholder="Describe this step... (Enter to add)"></textarea>
+                    <button class="btn-confirm" onclick="confirmStep()">Add</button>
+                </div>
+            </div>
+
+            <!-- Blog Content (Rich Text) -->
+            <div class="form-section">
+                <label>Blog Content</label>
+                <div class="editor-toolbar">
+                    <button class="toolbar-btn" onclick="execCmd('bold')"><b>B</b></button>
+                    <button class="toolbar-btn" onclick="execCmd('italic')"><i>I</i></button>
+                    <button class="toolbar-btn" onclick="execCmd('underline')"><u>U</u></button>
+                    <div class="toolbar-separator"></div>
+                    <button class="toolbar-btn" onclick="execCmd('insertUnorderedList')">• List</button>
+                    <button class="toolbar-btn" onclick="execCmd('insertOrderedList')">1. List</button>
+                    <div class="toolbar-separator"></div>
+                    <button class="toolbar-btn" onclick="execCmd('justifyLeft')">Left</button>
+                    <button class="toolbar-btn" onclick="execCmd('justifyCenter')">Center</button>
+                    <div class="toolbar-separator"></div>
+                    <button class="toolbar-btn" onclick="execCmd('formatBlock','h2')">H2</button>
+                    <button class="toolbar-btn" onclick="execCmd('formatBlock','h3')">H3</button>
+                    <button class="toolbar-btn" onclick="execCmd('formatBlock','p')">P</button>
+                </div>
+                <div id="blogContent" contenteditable="true"></div>
+            </div>
+
+        </div>
+
+        <!-- ===== RIGHT SETTINGS PANEL ===== -->
+        <div class="settings-panel">
+            <h3>Settings</h3>
+
+            <!-- Spacing -->
+            <div class="settings-group">
+                <h4>Spacing</h4>
+                <div class="slider-row">
+                    <label>Padding</label>
+                    <div class="slider-wrap">
+                        <input type="range" id="paddingSlider" min="0" max="48" value="16" oninput="updateSlider('padding',this.value)">
+                    </div>
+                    <div class="value" id="paddingVal">16px</div>
+                </div>
+                <div class="slider-row">
+                    <label>Margin</label>
+                    <div class="slider-wrap">
+                        <input type="range" id="marginSlider" min="0" max="48" value="16" oninput="updateSlider('margin',this.value)">
+                    </div>
+                    <div class="value" id="marginVal">16px</div>
+                </div>
+            </div>
+
+            <!-- Corner Radius -->
+            <div class="settings-group">
+                <h4>Style</h4>
+                <p style="font-size:13px;color:#888;margin:0 0 10px;">Corner Radius</p>
+                <div class="corner-options">
+                    <button class="corner-btn" onclick="setCorner(this,'4px')">4 px</button>
+                    <button class="corner-btn" onclick="setCorner(this,'8px')">8 px</button>
+                    <button class="corner-btn active" onclick="setCorner(this,'12px')">12 px</button>
+                    <button class="corner-btn" onclick="setCorner(this,'16px')">16 px</button>
+                    <button class="corner-btn" onclick="setCorner(this,'24px')">24 px</button>
+                </div>
+            </div>
+
+            <!-- Image Layout -->
+            <div class="settings-group">
+                <h4>Image</h4>
+                <div class="image-layout-options">
+                    <div class="layout-option active" onclick="setLayout(this,'2x2')">
+                        <span style="display:inline-flex;gap:2px;">
+                            <span style="width:7px;height:7px;background:currentColor;border-radius:1px;display:inline-block;opacity:.7;"></span>
+                            <span style="width:7px;height:7px;background:currentColor;border-radius:1px;display:inline-block;opacity:.7;"></span>
+                            <span style="width:7px;height:7px;background:currentColor;border-radius:1px;display:inline-block;opacity:.7;"></span>
+                            <span style="width:7px;height:7px;background:currentColor;border-radius:1px;display:inline-block;opacity:.7;"></span>
+                        </span>
+                        2x2 Grid
+                    </div>
+                    <div class="layout-option" onclick="setLayout(this,'3x1')">
+                        <span style="display:inline-flex;gap:2px;">
+                            <span style="width:7px;height:7px;background:currentColor;border-radius:1px;display:inline-block;opacity:.7;"></span>
+                            <span style="width:7px;height:7px;background:currentColor;border-radius:1px;display:inline-block;opacity:.7;"></span>
+                            <span style="width:7px;height:7px;background:currentColor;border-radius:1px;display:inline-block;opacity:.7;"></span>
+                        </span>
+                        3x1 Future row
+                    </div>
+                </div>
+                <input type="file" id="extraImagesInput" accept="image/*" multiple style="display:none;">
+                <button class="btn-add-images" id="addImagesBtn">Add Images</button>
+                <div id="extraImagesList" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;"></div>
+            </div>
+
+            <!-- Tags -->
+            <div class="settings-group">
+                <h4>Tags</h4>
+                <input type="text" class="settings-tags-input" id="sTagInput" placeholder="e.d., Dinner">
+                <div class="settings-tags-list" id="sTagsList"></div>
+            </div>
+
+            <!-- Comment Settings -->
+            <div class="settings-group">
+                <h4>Comment Settings</h4>
+                <div class="comment-setting">
+                    <input type="checkbox" id="allowComments" checked>
+                    <label for="allowComments">Allow Comments</label>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+/* ===== RICH TEXT ===== */
+function execCmd(cmd, val = null) {
+    document.execCommand(cmd, false, val);
+    document.getElementById('blogContent').focus();
+}
+
+/* ===== COVER IMAGE PREVIEW ===== */
+document.getElementById('coverImageInput').addEventListener('change', function () {
+    const file = this.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+        const img = document.getElementById('previewImg');
+        img.src = e.target.result;
+        img.style.display = 'block';
+        document.getElementById('uploadPlaceholder').style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+});
+
+/* ===== ADD IMAGES PANEL ===== */
+document.getElementById('addImagesBtn').addEventListener('click', () => {
+    document.getElementById('extraImagesInput').click();
+});
+document.getElementById('extraImagesInput').addEventListener('change', function () {
+    const list = document.getElementById('extraImagesList');
+    Array.from(this.files).forEach(file => {
+        const reader = new FileReader();
+        reader.onload = e => {
+            const wrap = document.createElement('div');
+            wrap.style.cssText = 'position:relative;width:72px;height:56px;';
+            const img = document.createElement('img');
+            img.src = e.target.result;
+            img.style.cssText = 'width:100%;height:100%;object-fit:cover;border-radius:6px;';
+            const rm = document.createElement('span');
+            rm.innerHTML = '&times;';
+            rm.style.cssText = 'position:absolute;top:-5px;right:-5px;background:#ff4d4d;color:#fff;border-radius:50%;width:17px;height:17px;display:flex;align-items:center;justify-content:center;font-size:12px;cursor:pointer;line-height:1;';
+            rm.onclick = () => wrap.remove();
+            wrap.appendChild(img); wrap.appendChild(rm);
+            list.appendChild(wrap);
+        };
+        reader.readAsDataURL(file);
+    });
+});
+
+/* ===== INGREDIENTS ===== */
+const ingredients = [];
+
+document.getElementById('showAddIngredient').addEventListener('click', () => {
+    const row = document.getElementById('addIngredientRow');
+    const visible = row.style.display !== 'none';
+    row.style.display = visible ? 'none' : 'flex';
+    if (!visible) document.getElementById('newIngredient').focus();
+});
+
+document.getElementById('newIngredient').addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); confirmIngredient(); }
+});
+
+function confirmIngredient() {
+    const val = document.getElementById('newIngredient').value.trim();
+    if (!val) { showToast('⚠️ Enter an ingredient first.'); return; }
+    ingredients.push(val);
+    document.getElementById('newIngredient').value = '';
+    document.getElementById('addIngredientRow').style.display = 'none';
+    renderIngredients();
+}
+
+function renderIngredients() {
+    const list = document.getElementById('ingredientList');
+    list.innerHTML = '';
+    ingredients.forEach((ing, i) => {
+        const row = document.createElement('div');
+        row.className = 'ingredient-item';
+        row.id = `ing-row-${i}`;
+        row.innerHTML = `
+            <span class="item-num">${i + 1}.</span>
+            <span id="ing-text-${i}">${ing}</span>
+            <button class="icon-btn" onclick="editIngredient(${i})" title="Edit">✏️</button>
+            <button class="icon-btn" onclick="deleteIngredient(${i})" title="Delete">🗑️</button>
+        `;
+        list.appendChild(row);
+    });
+}
+
+function editIngredient(i) {
+    const span = document.getElementById(`ing-text-${i}`);
+    const input = document.createElement('input');
+    input.className = 'edit-input';
+    input.value = ingredients[i];
+    span.replaceWith(input);
+    input.focus();
+    const save = () => {
+        const v = input.value.trim();
+        if (v) ingredients[i] = v;
+        renderIngredients();
+    };
+    input.addEventListener('blur', save);
+    input.addEventListener('keydown', e => { if (e.key === 'Enter') save(); });
+}
+
+function deleteIngredient(i) {
+    ingredients.splice(i, 1);
+    renderIngredients();
+    showToast('Ingredient removed.', 'info');
+}
+
+/* ===== STEPS ===== */
+const steps = [];
+
+document.getElementById('newStep').addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); confirmStep(); }
+});
+
+function confirmStep() {
+    const val = document.getElementById('newStep').value.trim();
+    if (!val) { showToast('⚠️ Enter step content first.'); return; }
+    steps.push(val);
+    document.getElementById('newStep').value = '';
+    renderSteps();
+}
+
+function renderSteps() {
+    const list = document.getElementById('stepsList');
+    list.innerHTML = '';
+    steps.forEach((step, i) => {
+        const row = document.createElement('div');
+        row.className = 'step-item';
+        row.innerHTML = `
+            <span class="step-label">Step ${i + 1}:</span>
+            <textarea onblur="saveStep(${i}, this)">${step}</textarea>
+            <button class="icon-btn" onclick="deleteStep(${i})" title="Delete">🗑️</button>
+        `;
+        list.appendChild(row);
+    });
+}
+
+function saveStep(i, el) {
+    const v = el.value.trim();
+    if (v) steps[i] = v;
+}
+
+function deleteStep(i) {
+    steps.splice(i, 1);
+    renderSteps();
+    showToast('Step removed.', 'info');
+}
+
+/* ===== SETTINGS TAGS ===== */
+const sTags = [];
+document.getElementById('sTagInput').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' || e.key === ',') {
+        e.preventDefault();
+        const val = this.value.trim().replace(',', '');
+        if (!val) return;
+        if (!sTags.includes(val)) { sTags.push(val); renderSTags(); }
+        this.value = '';
+    }
+});
+function renderSTags() {
+    const list = document.getElementById('sTagsList');
+    list.innerHTML = '';
+    sTags.forEach(t => {
+        const chip = document.createElement('div');
+        chip.className = 'stag-chip';
+        chip.innerHTML = `${t} <span class="rm" onclick="removeStag('${t}')">×</span>`;
+        list.appendChild(chip);
+    });
+}
+function removeStag(val) {
+    const i = sTags.indexOf(val);
+    if (i > -1) { sTags.splice(i, 1); renderSTags(); }
+}
+
+/* ===== SLIDERS ===== */
+function updateSlider(type, val) {
+    document.getElementById(type + 'Val').textContent = val + 'px';
+    const form = document.querySelector('.write-form');
+    if (type === 'padding') form.style.padding = val + 'px';
+    if (type === 'margin')  form.style.margin  = val + 'px auto';
+}
+
+/* ===== CORNER RADIUS ===== */
+function setCorner(btn, radius) {
+    document.querySelectorAll('.corner-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const targets = '.form-section input[type="text"],.form-section input[type="number"],.form-section textarea,.form-section select,#blogContent,.add-ingredient-row input,.add-step-row textarea,.step-item textarea,.settings-tags-input';
+    document.querySelectorAll(targets).forEach(el => el.style.borderRadius = radius);
+}
+
+/* ===== IMAGE LAYOUT ===== */
+function setLayout(el, layout) {
+    document.querySelectorAll('.layout-option').forEach(o => o.classList.remove('active'));
+    el.classList.add('active');
+}
+
+/* ===== TOAST ===== */
+function showToast(msg, type = 'info') {
+    const toast = document.getElementById('toast');
+    toast.textContent = msg;
+    toast.className = `toast ${type} show`;
+    setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+/* ===== VALIDATION ===== */
+function validateForm() {
+    if (!document.getElementById('blogTitle').value.trim())
+        { showToast('⚠️ Please enter a blog title.'); return false; }
+    if (!document.getElementById('blogDesc').value.trim())
+        { showToast('⚠️ Please add a short description.'); return false; }
+    if (!document.getElementById('blogContent').innerText.trim())
+        { showToast('⚠️ Blog content cannot be empty.'); return false; }
+    if (!document.getElementById('blogCategory').value)
+        { showToast('⚠️ Please select a category.'); return false; }
+    return true;
+}
+
+/* ===== SAVE DRAFT ===== */
+document.getElementById('saveDraftBtn').addEventListener('click', function () {
+    if (!document.getElementById('blogTitle').value.trim())
+        { showToast('⚠️ Add a title before saving draft.'); return; }
+    showToast('✓ Draft saved successfully!', 'success');
+});
+
+/* ===== PUBLISH ===== */
+document.getElementById('publishBtn').addEventListener('click', function () {
+    if (!validateForm()) return;
+
+    const formData = new FormData();
+    formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+    formData.append('title',         document.getElementById('blogTitle').value.trim());
+    formData.append('description',   document.getElementById('blogDesc').value.trim());
+    formData.append('content',       document.getElementById('blogContent').innerHTML);
+    formData.append('category',      document.getElementById('blogCategory').value);
+    formData.append('prep_time',     document.getElementById('prepTime').value.trim());
+    formData.append('cook_time',     document.getElementById('cookTime').value.trim());
+    formData.append('servings',      document.getElementById('servings').value);
+    formData.append('ingredients',   JSON.stringify(ingredients));
+    formData.append('steps',         JSON.stringify(steps));
+    formData.append('tags',          sTags.join(','));
+    formData.append('allow_comments', document.getElementById('allowComments').checked ? '1' : '0');
+
+    const coverFile = document.getElementById('coverImageInput').files[0];
+    if (coverFile) formData.append('cover_image', coverFile);
+
+    fetch("{% url 'create_blog' %}", { method: 'POST', body: formData })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            showToast('🎉 Blog published successfully!', 'success');
+            setTimeout(() => window.location.href = data.redirect_url || '/', 1500);
+        } else {
+            showToast(data.message || 'Something went wrong.', 'info');
+        }
+    })
+    .catch(() => showToast('⚠️ Network error. Please try again.', 'info'));
+});
+</script>
+
+{% endblock %}

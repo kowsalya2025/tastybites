@@ -1,0 +1,338 @@
+{% extends 'foodapp/base.html' %}
+{% load static %}
+
+{% block content %}
+
+<style>
+    
+   .hero{
+position:relative;
+height:320px;
+overflow:hidden;
+}
+.slide{
+position:absolute;
+width:100%;
+height:100%;
+opacity:0;
+transition:0.8s;
+}
+
+.slide img{
+width:100%;
+height:100%;
+object-fit:cover;
+} 
+
+/* ===== LAYOUT ===== */
+.container {
+    display: flex;
+    /* background: #f3f3f3; */
+    margin-top: 50px;
+    padding: 50px;
+}
+
+/* ===== LEFT PROFILE ===== */
+.profile {
+    width: 450px;
+    background: #f3f3f3;
+    padding: 30px;
+    border-right: 1px solid #ccc;
+    box-shadow: 5px 5px 5px #939292;
+    border-radius: 15px;
+}
+
+/* Header */
+.profile-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.share-btn {
+    border: 1px solid #ff4d4d;
+    padding: 6px 14px;
+    border-radius: 6px;
+    background: #fff;
+    cursor: pointer;
+}
+
+/* Avatar + name */
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    margin-top: 15px;
+}
+
+.avatar {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #7b2ff7, #a84bff);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 36px;
+}
+
+/* Button */
+.btn-main {
+    background: #ff4d4d;
+    color: #fff;
+    border: none;
+    padding: 12px;
+    border-radius: 25px;
+    width: 100%;
+    margin: 15px 0;
+    font-size: 18px;
+}
+
+/* Boxes */
+.box {
+    border: 1px solid #bbb;
+    padding: 20px;
+    border-radius: 6px;
+    margin: 10px 0;
+    background: #fff;
+}
+
+/* Activity */
+.activity {
+    display: flex;
+    gap: 10px;
+    margin: 10px;
+}
+
+.activity div {
+    border: 1px solid #aaa;
+    padding: 8px 15px;
+    border-radius: 6px;
+    background: #fff;
+}
+
+/* Logout */
+.logout {
+    margin-top: 20px;
+}
+
+/* ===== RIGHT SIDE ===== */
+.main {
+    flex: 1;
+    padding: 20px 30px;
+}
+
+/* Top button */
+.top-bar {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.write-btn {
+    background: #ff4d4d;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-size: 18px;
+}
+
+/* ===== STATS ===== */
+.stats {
+    width: 550px;
+    display: flex;
+    gap: 30px;
+    margin: 20px 0;
+}
+
+.card {
+    flex: 1;
+    border: 1px solid #ff4d4d;
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: #fff;
+}
+
+/* Icon box */
+.icon-box {
+    width: 50px;
+    height: 50px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 22px;
+}
+.join{
+    padding: 10px;
+}
+
+/* ===== TABS ===== */
+.tabs {
+    display: flex;
+    gap: 80px;
+    font-size: 22px;
+    margin-bottom: 15px;
+}
+
+.tabs .active {
+    border-bottom: 2px solid #ff4d4d;
+    padding-bottom: 5px;
+}
+
+/* ===== BLOG GRID ===== */
+.grid {
+    display: flex;
+    gap: 20px;
+}
+
+.blog-card {
+    width: 320px;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+}
+
+.blog-card img {
+    width: 100%;
+    height: 350px;
+    object-fit: cover;
+}
+
+
+/* Overlay strip */
+.blog-title {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    padding: 12px;
+    text-align: center;
+    background: rgba(255,255,255,0.85);
+    font-size: 14px;
+}
+
+.blog{
+    padding-left: 35px;
+    text-align: start;
+}
+</style>
+<section class="hero">
+
+<div class="carousel">
+
+<div class="slide active">
+<img src="{% static 'images/banner1.png' %}">
+</div>
+</div>
+</section>
+
+<div class="container">
+
+    <!-- LEFT SIDE -->
+    <div class="profile">
+
+        <!-- Header -->
+        <div class="profile-header">
+            <h3>Profile</h3>
+            <button class="share-btn">Share Profile</button>
+        </div>
+
+        <!-- User -->
+        <div class="user-info">
+            <div class="avatar">
+                {{ request.user.username|first|upper }}
+            </div>
+
+            <div>
+                <h2 style="margin:0;">{{ request.user.username }}</h2>
+                <p style="margin:0;">Username: @{{ request.user.username }}</p>
+            </div>
+        </div>
+
+        <p class="join">Joined {{ request.user.date_joined|date:"F Y" }}</p>
+
+        <button class="btn-main">Update Profile Picture</button>
+
+        <div class="box">📍 Chennai, India</div>
+
+        <p><strong>Bio</strong></p>
+        <div class="box"></div>
+
+        <p><strong>Activity</strong></p>
+        <div class="activity">
+            <div>4 Likes</div>
+            <div>2 Comment</div>
+        </div>
+
+        <div class="logout">
+            <a href="{% url 'logout' %}">← Logout</a>
+        </div>
+
+    </div>
+
+    <!-- RIGHT SIDE -->
+    <div class="main">
+
+        <div class="top-bar">
+            <button class="write-btn" onclick="window.location.href='{% url 'write_blog' %}'">Write a blog</button>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats">
+
+            <div class="card">
+                <div class="icon-box"><img src="{% static 'images/logos_blogger.png'%}" alt=""></div>
+                <div>
+                    <h3>Blogs</h3>
+                    <h1>2</h1>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="icon-box"><img src="{% static 'images/ri_draft-line.png'%}" alt=""></div>
+                <div>
+                    <h3>Draft</h3>
+                    <h1>0</h1>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <div class="active">Your Blogs</div>
+            <div>Drafts</div>
+        </div>
+
+        <!-- Blog Cards -->
+        <div class="grid">
+
+            <div class="blog-card">
+                <img src="{% static 'images/write1.webp' %}">
+                <div class="blog-title">
+                    Sheet Pan Peruvian Chicken Thighs
+                    <div class="blog">(blog)</div>
+                </div>
+            </div>
+
+            <div class="blog-card">
+                <img src="{% static 'images/write2.webp' %}">
+                <div class="blog-title">
+                    Beef with Mushrooms and Bamboo <br>
+                    Shoots
+                    <div class="blog">(blog)</div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
